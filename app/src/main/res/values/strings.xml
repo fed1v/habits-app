@@ -8,9 +8,18 @@
     <string name="good">Good</string>
     <string name="priority">Priority:</string>
     <string name="type">Type</string>
+    <string name="periodicity">Periodicity:</string>
+    <string name="times">times /</string>
     <string-array name="priorities">
         <item>Low</item>
         <item>Medium</item>
         <item>High</item>
+    </string-array>
+    <string-array name="periods">
+        <item>Hour</item>
+        <item>Day</item>
+        <item>Week</item>
+        <item>Month</item>
+        <item>Year</item>
     </string-array>
 </resources>

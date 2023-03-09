@@ -4,24 +4,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="10dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="10dp" />
+
     <EditText
         android:id="@+id/edittext_title"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="64dp"
         android:layout_marginVertical="10dp"
         android:hint="@string/title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/guideline_end"
+        app:layout_constraintStart_toStartOf="@id/guideline_start"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/edittext_description"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="64dp"
         android:layout_marginVertical="10dp"
         android:hint="@string/description"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/guideline_end"
+        app:layout_constraintStart_toStartOf="@id/guideline_start"
         app:layout_constraintTop_toBottomOf="@id/edittext_title" />
 
 
@@ -32,7 +46,7 @@
         android:text="@string/priority"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/cardview_type"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guideline_start"
         app:layout_constraintTop_toBottomOf="@+id/edittext_description" />
 
     <Spinner
@@ -48,11 +62,11 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardview_type"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/guideline_end"
+        app:layout_constraintStart_toStartOf="@id/guideline_start"
         app:layout_constraintTop_toBottomOf="@id/spinner_priority">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -80,12 +94,14 @@
                 app:layout_constraintTop_toBottomOf="@id/textview_type">
 
                 <RadioButton
+                    android:id="@+id/radiobutton_bad"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="50"
                     android:text="@string/bad" />
 
                 <RadioButton
+                    android:id="@+id/radiobutton_good"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="50"
@@ -96,6 +112,48 @@
 
 
     </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/textview_periodicity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/periodicity"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@id/guideline_start"
+        app:layout_constraintTop_toBottomOf="@id/cardview_type" />
+
+    <EditText
+        android:id="@+id/edittext_periodicity_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:inputType="numberDecimal"
+        android:paddingHorizontal="10dp"
+        android:text="0"
+        app:layout_constraintBottom_toBottomOf="@+id/textview_periodicity"
+        app:layout_constraintStart_toEndOf="@id/textview_periodicity"
+        app:layout_constraintTop_toTopOf="@id/textview_periodicity" />
+
+    <TextView
+        android:id="@+id/textview_times"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:text="@string/times"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@id/textview_periodicity"
+        app:layout_constraintStart_toEndOf="@+id/edittext_periodicity_amount"
+        app:layout_constraintTop_toTopOf="@id/textview_periodicity" />
+
+    <Spinner
+        android:id="@+id/spinner_periodicity_period"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:entries="@array/periods"
+        app:layout_constraintBottom_toBottomOf="@id/textview_periodicity"
+        app:layout_constraintStart_toEndOf="@id/textview_times"
+        app:layout_constraintTop_toTopOf="@id/textview_periodicity" />
 
     <Button
         android:id="@+id/button_save"

@@ -4,9 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.ivan.habitsapp.HabitsProvider
 import com.ivan.habitsapp.databinding.ActivityMainBinding
 import com.ivan.habitsapp.model.Habit
 import com.ivan.habitsapp.model.HabitPriority
+import com.ivan.habitsapp.model.HabitType
 import com.ivan.habitsapp.presentation.adapter.HabitAdapter
 import com.ivan.habitsapp.util.OnItemClickListener
 
@@ -37,27 +39,16 @@ class MainActivity : AppCompatActivity() {
         initRecyclerView()
 
         binding.buttonAdd.setOnClickListener {
-            Toast.makeText(this, "Add habit", Toast.LENGTH_SHORT).show()
+        //    Toast.makeText(this, "Add habit", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this, AddEditHabitActivity::class.java))
         }
     }
 
     private fun initRecyclerView() {
         habitAdapter = HabitAdapter(habitItemClickListener).apply {
-            habits = habitsList.toMutableList()
+            habits = HabitsProvider.habits
         }
 
         binding.recyclerviewHabitsList.adapter = habitAdapter
     }
-}
-
-val habitsList = (1..15).map {
-    Habit(
-        title = "title$it",
-        description = "description$it",
-        periodicity = it,
-        priority = if (it % 3 == 0) HabitPriority.LOW else if (it % 3 == 1) HabitPriority.MEDIUM else HabitPriority.HIGH,
-        type = "type$it",
-        color = it
-    )
 }
