@@ -2,13 +2,10 @@ package com.ivan.habitsapp.presentation
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.ivan.habitsapp.HabitsProvider
 import com.ivan.habitsapp.databinding.ActivityMainBinding
 import com.ivan.habitsapp.model.Habit
-import com.ivan.habitsapp.model.HabitPriority
-import com.ivan.habitsapp.model.HabitType
 import com.ivan.habitsapp.presentation.adapter.HabitAdapter
 import com.ivan.habitsapp.util.OnItemClickListener
 
@@ -22,8 +19,6 @@ class MainActivity : AppCompatActivity() {
 
     private val habitItemClickListener = object : OnItemClickListener<Habit> {
         override fun onItemClicked(item: Habit) {
-            println("habit = $item")
-            Toast.makeText(this@MainActivity, item.toString(), Toast.LENGTH_SHORT).show()
             Intent(this@MainActivity, AddEditHabitActivity::class.java).apply {
                 putExtra(EXTRA_HABIT, item)
                 startActivity(this)
@@ -39,7 +34,6 @@ class MainActivity : AppCompatActivity() {
         initRecyclerView()
 
         binding.buttonAdd.setOnClickListener {
-        //    Toast.makeText(this, "Add habit", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this, AddEditHabitActivity::class.java))
         }
     }

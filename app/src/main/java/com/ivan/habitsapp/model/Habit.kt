@@ -1,5 +1,6 @@
 package com.ivan.habitsapp.model
 
+import android.graphics.Color
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
@@ -10,5 +11,5 @@ data class Habit(
     val priority: HabitPriority,
     val type: HabitType,
     val periodicity: HabitPeriodicity,
-    val color: Int
+    val color: Int = Color.parseColor("#66BB6A")
 ) : Parcelable

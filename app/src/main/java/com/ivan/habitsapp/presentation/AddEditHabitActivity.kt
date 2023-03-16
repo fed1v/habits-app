@@ -1,11 +1,15 @@
 package com.ivan.habitsapp.presentation
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.View
+import android.view.View.OnClickListener
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.children
+import androidx.core.view.isVisible
 import com.ivan.habitsapp.HabitsProvider
 import com.ivan.habitsapp.R
 import com.ivan.habitsapp.databinding.ActivityAddEditHabitBinding
@@ -14,6 +18,7 @@ import com.ivan.habitsapp.model.*
 class AddEditHabitActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddEditHabitBinding
     private var habit: Habit? = null
+    private var chosenColor: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +43,8 @@ class AddEditHabitActivity : AppCompatActivity() {
             val periodicityPeriodString = binding.spinnerPeriodicityPeriod.selectedItem.toString()
             val periodicityPeriod = Periods.valueOf(periodicityPeriodString.uppercase())
 
+            val periodsAmount = binding.edittextPeriodsAmount.text.toString().toInt()
+
             val newHabit = Habit(
                 title = binding.edittextTitle.text.toString(),
                 description = binding.edittextDescription.text.toString(),
@@ -45,14 +52,31 @@ class AddEditHabitActivity : AppCompatActivity() {
                     binding.spinnerPriority.selectedItem.toString().uppercase()
                 ),
                 type = HabitType.values()[checkedId],
-                periodicity = HabitPeriodicity(periodicityTimes, periodicityPeriod),
-                color = 444 // TODO
+                periodicity = HabitPeriodicity(periodicityTimes, periodicityPeriod, periodsAmount),
+                color = chosenColor ?: habit!!.color
             )
 
             saveHabit(habit, newHabit)
             startActivity(Intent(this, MainActivity::class.java))
         }
 
+        initColorClickListeners()
+
+    }
+
+    private fun initColorClickListeners() {
+        binding.selectedColor.setOnClickListener {
+            binding.scrollviewColors.isVisible = !binding.scrollviewColors.isVisible
+        }
+
+        binding.apply {
+            val listener = OnClickListener { view ->
+                chosenColor = (view.background as ColorDrawable).color
+                selectedColor.background = ColorDrawable(chosenColor!!)
+            }
+
+            linearlayoutColors.children.forEach { it.setOnClickListener(listener) }
+        }
     }
 
     private fun initFields() {
@@ -68,6 +92,12 @@ class AddEditHabitActivity : AppCompatActivity() {
 
             binding.edittextPeriodicityAmount.setText(habit!!.periodicity.timesAmount.toString())
             binding.spinnerPeriodicityPeriod.setSelection(habit!!.periodicity.period.ordinal)
+            binding.edittextPeriodsAmount.setText(habit!!.periodicity.periodsAmount.toString())
+            binding.selectedColor.background = ColorDrawable(habit!!.color)
+        } else {
+            val color = Color.parseColor("#66BB6A")
+            binding.selectedColor.background = ColorDrawable(color)
+            chosenColor = color
         }
     }
 

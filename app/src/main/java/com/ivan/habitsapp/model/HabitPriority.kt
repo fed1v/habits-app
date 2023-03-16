@@ -1,14 +1,11 @@
 package com.ivan.habitsapp.model
 
-enum class HabitPriority {
-    LOW, MEDIUM, HIGH;
+enum class HabitPriority(
+    val type: String
+) {
+    LOW("Low"), MEDIUM("Medium"), HIGH("High");
 
-    companion object {
-        fun convertFromString(stringHabit: String): HabitPriority = when (stringHabit.lowercase()) {
-            "low" -> LOW
-            "medium" -> MEDIUM
-            "high" -> HIGH
-            else -> throw IllegalArgumentException()
-        }
+    override fun toString(): String {
+        return type
     }
 }

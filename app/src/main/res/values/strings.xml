@@ -10,6 +10,7 @@
     <string name="type">Type</string>
     <string name="periodicity">Periodicity:</string>
     <string name="times">times /</string>
+    <string name="zero">0</string>
     <string-array name="priorities">
         <item>Low</item>
         <item>Medium</item>
