@@ -1,42 +1,74 @@
 package com.ivan.habitsapp.presentation
 
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.view.View.OnClickListener
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import com.ivan.habitsapp.HabitsProvider
 import com.ivan.habitsapp.R
-import com.ivan.habitsapp.databinding.ActivityAddEditHabitBinding
+import com.ivan.habitsapp.databinding.FragmentAddEditHabitBinding
 import com.ivan.habitsapp.model.*
 
-class AddEditHabitActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityAddEditHabitBinding
+class AddEditHabitFragment : Fragment() {
+
+    companion object {
+        private const val ARG_PARAM = "myObject"
+
+        fun newInstance(habit: Habit?): AddEditHabitFragment {
+            return AddEditHabitFragment().apply {
+                val args = Bundle()
+                args.putParcelable(ARG_PARAM, habit)
+                arguments = args
+            }
+        }
+    }
+
+    private lateinit var binding: FragmentAddEditHabitBinding
     private var habit: Habit? = null
     private var chosenColor: Int? = null
 
-   /* override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAddEditHabitBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        println("addEditFragment onCreate")
+        arguments?.let {
+            habit = it.getParcelable(ARG_PARAM)
+            println("habit = $habit")
+        }
+    }
 
-        habit = intent.extras?.getParcelable(MainActivity.EXTRA_HABIT)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentAddEditHabitBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         initFields()
+        initButtonSaveClickListener()
+        initColorClickListeners()
+    }
 
+    private fun initButtonSaveClickListener() {
         binding.buttonSave.setOnClickListener {
             val radioButtonId = binding.radiogroupType.checkedRadioButtonId
             val radioButton = binding.radiogroupType.findViewById<RadioButton>(radioButtonId)
             val checkedId = binding.radiogroupType.indexOfChild(radioButton)
 
             if (checkedId == -1) {
-                Toast.makeText(this, "Please select type of habit", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Please select type of habit", Toast.LENGTH_SHORT)
+                    .show()
                 return@setOnClickListener
             }
 
@@ -58,11 +90,9 @@ class AddEditHabitActivity : AppCompatActivity() {
             )
 
             saveHabit(habit, newHabit)
-            startActivity(Intent(this, MainActivity::class.java))
+            Toast.makeText(requireContext(), "Save", Toast.LENGTH_SHORT).show()
+            requireActivity().onBackPressed()
         }
-
-        initColorClickListeners()
-
     }
 
     private fun initColorClickListeners() {
@@ -71,7 +101,7 @@ class AddEditHabitActivity : AppCompatActivity() {
         }
 
         binding.apply {
-            val listener = OnClickListener { view ->
+            val listener = View.OnClickListener { view ->
                 chosenColor = (view.background as ColorDrawable).color
                 selectedColor.background = ColorDrawable(chosenColor!!)
             }
@@ -110,11 +140,5 @@ class AddEditHabitActivity : AppCompatActivity() {
 
         val index = HabitsProvider.habits.indexOf(oldHabit)
         HabitsProvider.habits[index] = newHabit
-    }*/
-
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
-        binding = ActivityAddEditHabitBinding.inflate(layoutInflater)
-        setContentView(binding.root)
     }
 }
