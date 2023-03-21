@@ -14,8 +14,12 @@ import com.ivan.habitsapp.util.OnItemClickListener
 
 class HabitsListFragment : Fragment() {
 
-    companion object{
+    companion object {
         const val HABITS_LIST_FRAGMENT_TAG = "HabitsListFragment"
+
+        fun newInstance(): HabitsListFragment {
+            return HabitsListFragment()
+        }
     }
 
     private lateinit var binding: FragmentHabitsListBinding

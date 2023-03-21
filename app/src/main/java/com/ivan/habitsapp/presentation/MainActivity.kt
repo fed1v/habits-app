@@ -5,6 +5,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import com.ivan.habitsapp.R
 import com.ivan.habitsapp.databinding.ActivityMainBinding
 
@@ -37,8 +38,14 @@ class MainActivity : AppCompatActivity() {
 
         binding.mainActivityNavigationView.setNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.menuItemHomeScreen -> Toast.makeText(this, "Home", Toast.LENGTH_SHORT).show()
-                R.id.menuItemAppInfo -> Toast.makeText(this, "App Info", Toast.LENGTH_SHORT).show()
+                R.id.menuItemHomeScreen -> {
+                    binding.mainActivityDrawerLayout.closeDrawer(GravityCompat.START)
+                    openHabitsListFragment()
+                }
+                R.id.menuItemAppInfo -> {
+                    binding.mainActivityDrawerLayout.closeDrawer(GravityCompat.START)
+                    openAppInfoFragment()
+                }
                 else -> Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
             }
             true
@@ -56,7 +63,14 @@ class MainActivity : AppCompatActivity() {
     private fun openHabitsListFragment() {
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.mainActivityFragmentContainer, HabitsListFragment())
+            .replace(R.id.mainActivityFragmentContainer, HabitsListFragment.newInstance())
+            .commit()
+    }
+
+    private fun openAppInfoFragment() {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.mainActivityFragmentContainer, AppInfoFragment.newInstance())
             .commit()
     }
 
