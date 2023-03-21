@@ -1,60 +1,56 @@
 package com.ivan.habitsapp.presentation
 
 import android.os.Bundle
-import androidx.activity.OnBackPressedCallback
+import android.view.MenuItem
+import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import com.ivan.habitsapp.R
 import com.ivan.habitsapp.databinding.ActivityMainBinding
-import com.ivan.habitsapp.presentation.adapter.HabitAdapter
 
 class MainActivity : AppCompatActivity() {
-    companion object {
-        const val EXTRA_HABIT = "EXTRA_HABIT"
-    }
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var habitAdapter: HabitAdapter
-
-    //  private val habitItemClickListener = object : OnItemClickListener<Habit> {
-    //      override fun onItemClicked(item: Habit) {
-    //          Intent(this@MainActivity, AddEditHabitActivity::class.java).apply {
-    //              putExtra(EXTRA_HABIT, item)
-    //              startActivity(this)
-    //          }
-    //      }
-    //  }
-//
-    //  override fun onCreate(savedInstanceState: Bundle?) {
-    //      super.onCreate(savedInstanceState)
-    //      binding = ActivityMainBinding.inflate(layoutInflater)
-    //      setContentView(binding.root)
-//
-    //      initRecyclerView()
-//
-    //      binding.buttonAdd.setOnClickListener {
-    //          startActivity(Intent(this, AddEditHabitActivity::class.java))
-    //      }
-    //  }
-//
-    //  private fun openAddEditActivityFragment(){
-    //      supportFragmentManager
-    //          .beginTransaction()
-    //          .replace(R.id.)
-    //  }
-    //  private fun initRecyclerView() {
-    //      habitAdapter = HabitAdapter(habitItemClickListener).apply {
-    //          habits = HabitsProvider.habits
-    //      }
-//
-    //      binding.recyclerviewHabitsList.adapter = habitAdapter
-    //  }
+    private lateinit var toggle: ActionBarDrawerToggle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        initDrawerLayoutNavigation()
+
         openHabitsListFragment()
+    }
+
+    private fun initDrawerLayoutNavigation() {
+        toggle = ActionBarDrawerToggle(
+            this,
+            binding.mainActivityDrawerLayout,
+            R.string.open,
+            R.string.close
+        )
+        binding.mainActivityDrawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        binding.mainActivityNavigationView.setNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.menuItemHomeScreen -> Toast.makeText(this, "Home", Toast.LENGTH_SHORT).show()
+                R.id.menuItemAppInfo -> Toast.makeText(this, "App Info", Toast.LENGTH_SHORT).show()
+                else -> Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
+            }
+            true
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (toggle.onOptionsItemSelected(item)) {
+            return true
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
     private fun openHabitsListFragment() {

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.ivan.habitsapp.HabitsProvider
 import com.ivan.habitsapp.R
@@ -14,6 +13,10 @@ import com.ivan.habitsapp.presentation.adapter.HabitAdapter
 import com.ivan.habitsapp.util.OnItemClickListener
 
 class HabitsListFragment : Fragment() {
+
+    companion object{
+        const val HABITS_LIST_FRAGMENT_TAG = "HabitsListFragment"
+    }
 
     private lateinit var binding: FragmentHabitsListBinding
     private lateinit var habitAdapter: HabitAdapter
@@ -28,8 +31,7 @@ class HabitsListFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        println("HabitsListFragment onCreateView")
+    ): View {
         binding = FragmentHabitsListBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -39,7 +41,6 @@ class HabitsListFragment : Fragment() {
 
         initRecyclerView()
         binding.buttonAdd.setOnClickListener {
-            Toast.makeText(requireContext(), "Add pressed", Toast.LENGTH_SHORT).show()
             openAddEditHabitFragment(null)
         }
     }
@@ -50,9 +51,9 @@ class HabitsListFragment : Fragment() {
             .replace(
                 R.id.mainActivityFragmentContainer,
                 AddEditHabitFragment.newInstance(habit),
-                "AddEditHabitFragment"
+                HABITS_LIST_FRAGMENT_TAG
             )
-            .addToBackStack("AddEditHabitFragment")
+            .addToBackStack(HABITS_LIST_FRAGMENT_TAG)
             .commit()
     }
 
@@ -62,30 +63,4 @@ class HabitsListFragment : Fragment() {
         }
         binding.recyclerviewHabitsList.adapter = habitAdapter
     }
-
-//
-    //  override fun onCreate(savedInstanceState: Bundle?) {
-    //      super.onCreate(savedInstanceState)
-    //      binding = ActivityMainBinding.inflate(layoutInflater)
-    //      setContentView(binding.root)
-//
-    //      initRecyclerView()
-//
-    //      binding.buttonAdd.setOnClickListener {
-    //          startActivity(Intent(this, AddEditHabitActivity::class.java))
-    //      }
-    //  }
-//
-    //  private fun openAddEditActivityFragment(){
-    //      supportFragmentManager
-    //          .beginTransaction()
-    //          .replace(R.id.)
-    //  }
-    //  private fun initRecyclerView() {
-    //      habitAdapter = HabitAdapter(habitItemClickListener).apply {
-    //          habits = HabitsProvider.habits
-    //      }
-//
-    //      binding.recyclerviewHabitsList.adapter = habitAdapter
-    //  }
 }

@@ -1,6 +1,5 @@
 package com.ivan.habitsapp.presentation
 
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -19,7 +19,7 @@ import com.ivan.habitsapp.model.*
 class AddEditHabitFragment : Fragment() {
 
     companion object {
-        private const val ARG_PARAM = "myObject"
+        private const val ARG_PARAM = "HABIT_PARAM"
 
         fun newInstance(habit: Habit?): AddEditHabitFragment {
             return AddEditHabitFragment().apply {
@@ -36,10 +36,8 @@ class AddEditHabitFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        println("addEditFragment onCreate")
         arguments?.let {
             habit = it.getParcelable(ARG_PARAM)
-            println("habit = $habit")
         }
     }
 
@@ -90,7 +88,6 @@ class AddEditHabitFragment : Fragment() {
             )
 
             saveHabit(habit, newHabit)
-            Toast.makeText(requireContext(), "Save", Toast.LENGTH_SHORT).show()
             requireActivity().onBackPressed()
         }
     }
@@ -126,7 +123,7 @@ class AddEditHabitFragment : Fragment() {
             binding.edittextPeriodsAmount.setText(habit!!.periodicity.periodsAmount.toString())
             binding.selectedColor.background = ColorDrawable(habit!!.color)
         } else {
-            val color = Color.parseColor("#66BB6A")
+            val color = ContextCompat.getColor(requireContext(), R.color.default_green)
             binding.selectedColor.background = ColorDrawable(color)
             chosenColor = color
         }

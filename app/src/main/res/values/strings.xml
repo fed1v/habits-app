@@ -11,6 +11,10 @@
     <string name="periodicity">Periodicity:</string>
     <string name="times">times /</string>
     <string name="zero">0</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <string name="habits">Habits</string>
+    <string name="app_info">App info</string>
     <string-array name="priorities">
         <item>Low</item>
         <item>Medium</item>
@@ -22,5 +26,10 @@
         <item>Week</item>
         <item>Month</item>
         <item>Year</item>
+    </string-array>
+    <string-array name="navigation_drawer_items_array">
+        <item>Item1</item>
+        <item>Item2</item>
+        <item>Item3</item>
     </string-array>
 </resources>
