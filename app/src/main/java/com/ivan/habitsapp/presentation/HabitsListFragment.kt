@@ -18,12 +18,13 @@ class HabitsListFragment : Fragment() {
 
     companion object {
         const val HABITS_LIST_FRAGMENT_TAG = "HabitsListFragment"
-        private const val ARG_PARAM = "HABIT_PARAM"
+        private const val TYPE_ARG_PARAM = "TYPE_PARAM"
+        private const val HABIT_ARG_PARAM = "HABIT_PARAM"
 
         fun newInstance(type: HabitType?): HabitsListFragment {
             return HabitsListFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM, type?.name)
+                    putString(TYPE_ARG_PARAM, type?.name)
                 }
             }
         }
@@ -45,7 +46,8 @@ class HabitsListFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         arguments?.let {
-            type = it.getString((ARG_PARAM))?.let { typeString -> HabitType.valueOf(typeString) }
+            type =
+                it.getString((TYPE_ARG_PARAM))?.let { typeString -> HabitType.valueOf(typeString) }
             Toast.makeText(requireContext(), "Type: $type", Toast.LENGTH_SHORT).show()
         }
     }
@@ -76,15 +78,22 @@ class HabitsListFragment : Fragment() {
     }
 
     private fun openAddEditHabitFragment(habit: Habit?) {
-        requireActivity().supportFragmentManager
-            .beginTransaction()
-            .replace(
-                R.id.mainActivityFragmentContainer,
-                AddEditHabitFragment.newInstance(habit),
-                HABITS_LIST_FRAGMENT_TAG
-            )
-            .addToBackStack(HABITS_LIST_FRAGMENT_TAG)
-            .commit()
+        //    requireActivity().supportFragmentManager
+        //        .beginTransaction()
+        //        .replace(
+        //            R.id.mainActivityNavHost,
+        //            AddEditHabitFragment.newInstance(habit),
+        //            HABITS_LIST_FRAGMENT_TAG
+        //        )
+        //        .addToBackStack(HABITS_LIST_FRAGMENT_TAG)
+        //        .commit()
+        val bundle = Bundle().apply {
+            putParcelable(HABIT_ARG_PARAM, habit)
+        }
+
+        (requireActivity() as MainActivity)
+            .navController
+            .navigate(R.id.action_habitsViewPagerFragment_to_addEditHabitFragment, bundle)
     }
 
     private fun initRecyclerView() {

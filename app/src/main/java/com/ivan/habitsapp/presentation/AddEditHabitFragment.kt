@@ -91,8 +91,15 @@ class AddEditHabitFragment : Fragment() {
             )
 
             saveHabit(habit, newHabit)
-            requireActivity().onBackPressed()
+
+            openNavHost()
         }
+    }
+
+    private fun openNavHost() {
+        (requireActivity() as MainActivity)
+            .navController
+            .navigate(R.id.action_addEditHabitFragment_to_habitsViewPagerFragment)
     }
 
     private fun initColorClickListeners() {

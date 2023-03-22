@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/habitsViewPagerFragment">
+
+
+    <fragment
+        android:id="@+id/habitsViewPagerFragment"
+        android:name="com.ivan.habitsapp.presentation.HabitsViewPagerFragment"
+        android:label="HabitsViewPagerFragment">
+        <action
+            android:id="@+id/action_habitsViewPagerFragment_to_appInfoFragment"
+            app:destination="@id/appInfoFragment" />
+        <action
+            android:id="@+id/action_habitsViewPagerFragment_to_habitsListFragment"
+            app:destination="@id/habitsListFragment" />
+        <action
+            android:id="@+id/action_habitsViewPagerFragment_to_addEditHabitFragment"
+            app:destination="@id/addEditHabitFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addEditHabitFragment"
+        android:name="com.ivan.habitsapp.presentation.AddEditHabitFragment"
+        android:label="AddEditHabitFragment">
+        <action
+            android:id="@+id/action_addEditHabitFragment_to_habitsViewPagerFragment"
+            app:destination="@id/habitsViewPagerFragment" />
+        <action
+            android:id="@+id/action_addEditHabitFragment_to_appInfoFragment"
+            app:destination="@id/appInfoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/appInfoFragment"
+        android:name="com.ivan.habitsapp.presentation.AppInfoFragment"
+        android:label="AppInfoFragment">
+        <action
+            android:id="@+id/action_appInfoFragment_to_habitsViewPagerFragment"
+            app:destination="@id/habitsViewPagerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/habitsListFragment"
+        android:name="com.ivan.habitsapp.presentation.HabitsListFragment"
+        android:label="HabitsListFragment">
+        <action
+            android:id="@+id/action_habitsListFragment_to_appInfoFragment"
+            app:destination="@id/appInfoFragment" />
+    </fragment>
+</navigation>

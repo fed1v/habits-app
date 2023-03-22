@@ -6,22 +6,25 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import com.ivan.habitsapp.R
 import com.ivan.habitsapp.databinding.ActivityMainBinding
-import com.ivan.habitsapp.model.HabitType
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var toggle: ActionBarDrawerToggle
+    lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        initDrawerLayoutNavigation()
+        navController = Navigation.findNavController(this, R.id.mainActivityNavHost)
 
+        initDrawerLayoutNavigation()
         openHabitsViewPagerFragment()
     }
 
@@ -61,31 +64,12 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun openHabitsListFragment() {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(
-                R.id.mainActivityFragmentContainer,
-                HabitsListFragment.newInstance(HabitType.GOOD)
-            )
-            .commit()
-    }
-
     private fun openAppInfoFragment() {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(
-                R.id.mainActivityFragmentContainer,
-                AppInfoFragment.newInstance()
-            )
-            .commit()
+        navController.navigate(R.id.appInfoFragment)
     }
 
     private fun openHabitsViewPagerFragment() {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.mainActivityFragmentContainer, HabitsViewPagerFragment())
-            .commit()
+        navController.navigate(R.id.habitsViewPagerFragment)
     }
 
     override fun onBackPressed() {
