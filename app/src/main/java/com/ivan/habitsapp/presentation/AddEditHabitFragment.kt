@@ -65,8 +65,11 @@ class AddEditHabitFragment : Fragment() {
             val checkedId = binding.radiogroupType.indexOfChild(radioButton)
 
             if (checkedId == -1) {
-                Toast.makeText(requireContext(), "Please select type of habit", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.please_select_type_of_habit),
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@setOnClickListener
             }
 
@@ -136,6 +139,10 @@ class AddEditHabitFragment : Fragment() {
         }
 
         val index = HabitsProvider.habits.indexOf(oldHabit)
-        HabitsProvider.habits[index] = newHabit
+        if (index >= 0 && index < HabitsProvider.habits.size) {
+            HabitsProvider.habits[index] = newHabit
+        } else {
+            Toast.makeText(requireContext(), getString(R.string.error), Toast.LENGTH_SHORT).show()
+        }
     }
 }

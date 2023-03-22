@@ -5,7 +5,7 @@ import com.ivan.habitsapp.model.*
 class HabitsProvider {
     companion object {
         val habits: MutableList<Habit> =// mutableListOf()
-            (0..15).map {
+            (0..30).map {
                 Habit(
                     title = "title$it",
                     description = "description$it",

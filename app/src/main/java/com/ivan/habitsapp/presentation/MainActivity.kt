@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import com.ivan.habitsapp.R
 import com.ivan.habitsapp.databinding.ActivityMainBinding
+import com.ivan.habitsapp.model.HabitType
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,7 +22,7 @@ class MainActivity : AppCompatActivity() {
 
         initDrawerLayoutNavigation()
 
-        openHabitsListFragment()
+        openHabitsViewPagerFragment()
     }
 
     private fun initDrawerLayoutNavigation() {
@@ -40,13 +41,13 @@ class MainActivity : AppCompatActivity() {
             when (it.itemId) {
                 R.id.menuItemHomeScreen -> {
                     binding.mainActivityDrawerLayout.closeDrawer(GravityCompat.START)
-                    openHabitsListFragment()
+                    openHabitsViewPagerFragment()
                 }
                 R.id.menuItemAppInfo -> {
                     binding.mainActivityDrawerLayout.closeDrawer(GravityCompat.START)
                     openAppInfoFragment()
                 }
-                else -> Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
+                else -> Toast.makeText(this, getString(R.string.error), Toast.LENGTH_SHORT).show()
             }
             true
         }
@@ -63,18 +64,32 @@ class MainActivity : AppCompatActivity() {
     private fun openHabitsListFragment() {
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.mainActivityFragmentContainer, HabitsListFragment.newInstance())
+            .replace(
+                R.id.mainActivityFragmentContainer,
+                HabitsListFragment.newInstance(HabitType.GOOD)
+            )
             .commit()
     }
 
     private fun openAppInfoFragment() {
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.mainActivityFragmentContainer, AppInfoFragment.newInstance())
+            .replace(
+                R.id.mainActivityFragmentContainer,
+                AppInfoFragment.newInstance()
+            )
+            .commit()
+    }
+
+    private fun openHabitsViewPagerFragment() {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.mainActivityFragmentContainer, HabitsViewPagerFragment())
             .commit()
     }
 
     override fun onBackPressed() {
+        println(supportFragmentManager.fragments)
         if (supportFragmentManager.backStackEntryCount == 0) {
             super.onBackPressed()
         } else {

@@ -10,9 +10,7 @@
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/mainActivityFragmentContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout="@layout/fragment_habits_list" />
-
+        android:layout_height="match_parent" />
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/mainActivityNavigationView"
