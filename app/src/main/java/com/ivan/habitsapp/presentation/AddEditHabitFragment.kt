@@ -11,10 +11,12 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import com.ivan.habitsapp.HabitsProvider
+import androidx.lifecycle.ViewModelProvider
 import com.ivan.habitsapp.R
 import com.ivan.habitsapp.databinding.FragmentAddEditHabitBinding
 import com.ivan.habitsapp.model.*
+import com.ivan.habitsapp.presentation.viewmodel.AddEditHabitViewModel
+import com.ivan.habitsapp.presentation.viewmodel.viewmodel_factory.AddEditHabitViewModelFactory
 
 class AddEditHabitFragment : Fragment() {
 
@@ -29,6 +31,9 @@ class AddEditHabitFragment : Fragment() {
             }
         }
     }
+
+    private lateinit var viewModel: AddEditHabitViewModel
+    private lateinit var viewModelFactory: AddEditHabitViewModelFactory
 
     private lateinit var binding: FragmentAddEditHabitBinding
     private var habit: Habit? = null
@@ -53,9 +58,26 @@ class AddEditHabitFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initFields()
+        initViewModel()
         initButtonSaveClickListener()
         initColorClickListeners()
+    }
+
+    override fun onStart() {
+        viewModel.showHabit(habit)
+        super.onStart()
+    }
+
+    private fun initViewModel() {
+        viewModelFactory = AddEditHabitViewModelFactory(habit)
+        viewModel = ViewModelProvider(
+            requireActivity(),
+            viewModelFactory
+        )[AddEditHabitViewModel::class.java]
+
+        viewModel.habitLiveData.observe(viewLifecycleOwner) {
+            initFields(it)
+        }
     }
 
     private fun initButtonSaveClickListener() {
@@ -90,8 +112,7 @@ class AddEditHabitFragment : Fragment() {
                 color = chosenColor ?: habit!!.color
             )
 
-            saveHabit(habit, newHabit)
-
+            viewModel.saveHabit(habit, newHabit)
             openNavHost()
         }
     }
@@ -117,39 +138,25 @@ class AddEditHabitFragment : Fragment() {
         }
     }
 
-    private fun initFields() {
+    private fun initFields(habit: Habit?) {
         if (habit != null) {
-            binding.edittextTitle.setText(habit!!.title)
-            binding.edittextDescription.setText(habit!!.description)
-            binding.spinnerPriority.setSelection(habit!!.priority.ordinal)
+            binding.edittextTitle.setText(habit.title)
+            binding.edittextDescription.setText(habit.description)
+            binding.spinnerPriority.setSelection(habit.priority.ordinal)
 
-            when (habit!!.type) {
+            when (habit.type) {
                 HabitType.BAD -> binding.radiogroupType.check(R.id.radiobutton_bad)
                 HabitType.GOOD -> binding.radiogroupType.check(R.id.radiobutton_good)
             }
 
-            binding.edittextPeriodicityAmount.setText(habit!!.periodicity.timesAmount.toString())
-            binding.spinnerPeriodicityPeriod.setSelection(habit!!.periodicity.period.ordinal)
-            binding.edittextPeriodsAmount.setText(habit!!.periodicity.periodsAmount.toString())
-            binding.selectedColor.background = ColorDrawable(habit!!.color)
+            binding.edittextPeriodicityAmount.setText(habit.periodicity.timesAmount.toString())
+            binding.spinnerPeriodicityPeriod.setSelection(habit.periodicity.period.ordinal)
+            binding.edittextPeriodsAmount.setText(habit.periodicity.periodsAmount.toString())
+            binding.selectedColor.background = ColorDrawable(habit.color)
         } else {
             val color = ContextCompat.getColor(requireContext(), R.color.default_green)
             binding.selectedColor.background = ColorDrawable(color)
             chosenColor = color
-        }
-    }
-
-    private fun saveHabit(oldHabit: Habit?, newHabit: Habit) {
-        if (habit == null) {
-            HabitsProvider.habits.add(newHabit)
-            return
-        }
-
-        val index = HabitsProvider.habits.indexOf(oldHabit)
-        if (index >= 0 && index < HabitsProvider.habits.size) {
-            HabitsProvider.habits[index] = newHabit
-        } else {
-            Toast.makeText(requireContext(), getString(R.string.error), Toast.LENGTH_SHORT).show()
         }
     }
 }

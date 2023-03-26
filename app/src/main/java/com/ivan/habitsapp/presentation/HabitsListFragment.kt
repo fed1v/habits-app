@@ -4,14 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.ivan.habitsapp.HabitsProvider
+import androidx.lifecycle.ViewModelProvider
 import com.ivan.habitsapp.R
 import com.ivan.habitsapp.databinding.FragmentHabitsListBinding
 import com.ivan.habitsapp.model.Habit
+import com.ivan.habitsapp.model.HabitFilter
 import com.ivan.habitsapp.model.HabitType
 import com.ivan.habitsapp.presentation.adapter.HabitAdapter
+import com.ivan.habitsapp.presentation.viewmodel.HabitsListViewModel
+import com.ivan.habitsapp.presentation.viewmodel.viewmodel_factory.HabitsListViewModelFactory
 import com.ivan.habitsapp.util.OnItemClickListener
 
 class HabitsListFragment : Fragment() {
@@ -30,11 +32,15 @@ class HabitsListFragment : Fragment() {
         }
     }
 
+    private lateinit var viewModel: HabitsListViewModel
+
     private lateinit var binding: FragmentHabitsListBinding
     private lateinit var habitAdapter: HabitAdapter
 
     private lateinit var habits: MutableList<Habit>
     private var type: HabitType? = null
+
+    private var filters: HabitFilter? = null
 
     private val habitItemClickListener = object : OnItemClickListener<Habit> {
         override fun onItemClicked(item: Habit) {
@@ -46,9 +52,9 @@ class HabitsListFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         arguments?.let {
-            type =
-                it.getString((TYPE_ARG_PARAM))?.let { typeString -> HabitType.valueOf(typeString) }
-            Toast.makeText(requireContext(), "Type: $type", Toast.LENGTH_SHORT).show()
+            type = it.getString((TYPE_ARG_PARAM))?.let { typeString ->
+                HabitType.valueOf(typeString)
+            }
         }
     }
 
@@ -64,29 +70,33 @@ class HabitsListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        habits = HabitsProvider.habits
-        type?.let { habitType ->
-            habits = habits
-                .filter { habit -> habit.type == habitType }
-                .toMutableList()
-        }
-
+        initFilters()
         initRecyclerView()
+        initViewModel()
         binding.buttonAdd.setOnClickListener {
             openAddEditHabitFragment(null)
         }
     }
 
+    private fun initFilters() {
+        filters = HabitFilter(
+            types = if (type == null) null else listOf(type!!)
+        )
+    }
+
+    private fun initViewModel() {
+        viewModel = ViewModelProvider(
+            this,
+            HabitsListViewModelFactory(filters)
+        )[HabitsListViewModel::class.java]
+
+        viewModel.habitsListLiveData.observe(viewLifecycleOwner) {
+            habits = it.toMutableList()
+            habitAdapter.habits = habits
+        }
+    }
+
     private fun openAddEditHabitFragment(habit: Habit?) {
-        //    requireActivity().supportFragmentManager
-        //        .beginTransaction()
-        //        .replace(
-        //            R.id.mainActivityNavHost,
-        //            AddEditHabitFragment.newInstance(habit),
-        //            HABITS_LIST_FRAGMENT_TAG
-        //        )
-        //        .addToBackStack(HABITS_LIST_FRAGMENT_TAG)
-        //        .commit()
         val bundle = Bundle().apply {
             putParcelable(HABIT_ARG_PARAM, habit)
         }
@@ -97,9 +107,7 @@ class HabitsListFragment : Fragment() {
     }
 
     private fun initRecyclerView() {
-        habitAdapter = HabitAdapter(habitItemClickListener).apply {
-            habits = this@HabitsListFragment.habits
-        }
+        habitAdapter = HabitAdapter(habitItemClickListener)
         binding.recyclerviewHabitsList.adapter = habitAdapter
     }
 }
