@@ -16,7 +16,6 @@ import com.ivan.habitsapp.R
 import com.ivan.habitsapp.databinding.FragmentAddEditHabitBinding
 import com.ivan.habitsapp.model.*
 import com.ivan.habitsapp.presentation.viewmodel.AddEditHabitViewModel
-import com.ivan.habitsapp.presentation.viewmodel.viewmodel_factory.AddEditHabitViewModelFactory
 
 class AddEditHabitFragment : Fragment() {
 
@@ -33,7 +32,6 @@ class AddEditHabitFragment : Fragment() {
     }
 
     private lateinit var viewModel: AddEditHabitViewModel
-    private lateinit var viewModelFactory: AddEditHabitViewModelFactory
 
     private lateinit var binding: FragmentAddEditHabitBinding
     private var habit: Habit? = null
@@ -69,11 +67,7 @@ class AddEditHabitFragment : Fragment() {
     }
 
     private fun initViewModel() {
-        viewModelFactory = AddEditHabitViewModelFactory(habit)
-        viewModel = ViewModelProvider(
-            requireActivity(),
-            viewModelFactory
-        )[AddEditHabitViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[AddEditHabitViewModel::class.java]
 
         viewModel.habitLiveData.observe(viewLifecycleOwner) {
             initFields(it)

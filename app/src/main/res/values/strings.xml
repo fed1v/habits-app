@@ -18,6 +18,11 @@
     <string name="author_ivan_fedorov">Author: Ivan Fedorov</string>
     <string name="error">Error</string>
     <string name="please_select_type_of_habit">Please select type of habit</string>
+    <string name="order_by_priority">Order by Priority:</string>
+    <string name="find_by_name">Find by name</string>
+    <string name="ascending">Ascending</string>
+    <string name="descending">Descending</string>
+    <string name="reset">Reset</string>
     <string-array name="priorities">
         <item>Low</item>
         <item>Medium</item>

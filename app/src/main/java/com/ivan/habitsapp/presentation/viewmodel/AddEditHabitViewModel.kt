@@ -6,9 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.ivan.habitsapp.HabitsProvider
 import com.ivan.habitsapp.model.Habit
 
-class AddEditHabitViewModel(
-    private val habit: Habit?
-) : ViewModel() {
+class AddEditHabitViewModel: ViewModel() {
 
     private var _habitLiveData: MutableLiveData<Habit?> = MutableLiveData<Habit?>()
     val habitLiveData: LiveData<Habit?>

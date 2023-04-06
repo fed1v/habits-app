@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.ivan.habitsapp.R
 import com.ivan.habitsapp.databinding.FragmentHabitsListBinding
 import com.ivan.habitsapp.model.Habit
-import com.ivan.habitsapp.model.HabitFilter
+import com.ivan.habitsapp.model.HabitOrder
 import com.ivan.habitsapp.model.HabitType
 import com.ivan.habitsapp.presentation.adapter.HabitAdapter
 import com.ivan.habitsapp.presentation.viewmodel.HabitsListViewModel
@@ -40,7 +42,8 @@ class HabitsListFragment : Fragment() {
     private lateinit var habits: MutableList<Habit>
     private var type: HabitType? = null
 
-    private var filters: HabitFilter? = null
+    private var filters: ((Habit) -> Boolean)? = null
+    private var priorityOrder: HabitOrder? = null
 
     private val habitItemClickListener = object : OnItemClickListener<Habit> {
         override fun onItemClicked(item: Habit) {
@@ -73,15 +76,70 @@ class HabitsListFragment : Fragment() {
         initFilters()
         initRecyclerView()
         initViewModel()
+
+        showBottomSheet()
+        initSearchView()
+        initRadioGroup()
+        initResetButton()
+
         binding.buttonAdd.setOnClickListener {
             openAddEditHabitFragment(null)
         }
     }
 
+    private fun initResetButton() {
+        binding.fragmentHabitsListResetButton.setOnClickListener {
+            resetFilters()
+        }
+    }
+
+    private fun initRadioGroup() {
+        binding.fragmentHabitsListOrderByPriorityAscending.setOnClickListener {
+            priorityOrder = HabitOrder.ASCENDING
+            viewModel.showHabitsWithFilters({ it.type == type }, priorityOrder ?: HabitOrder.NONE)
+        }
+
+        binding.fragmentHabitsListOrderByPriorityDescending.setOnClickListener {
+            priorityOrder = HabitOrder.DESCENDING
+            viewModel.showHabitsWithFilters({ it.type == type }, priorityOrder ?: HabitOrder.NONE)
+        }
+    }
+
+    private fun resetFilters() {
+        viewModel.showHabitsWithFilters({ it.type == type }, HabitOrder.NONE)
+        binding.fragmentHabitsListOrderByPriorityRadioGroup.clearCheck()
+    }
+
+    private fun initSearchView() {
+        binding.fragmentHabitsListSearchView.setOnQueryTextListener(object :
+            SearchView.OnQueryTextListener {
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                viewModel.showHabitsWithFilters(
+                    titleFilter = {
+                        it.title.contains(newText) && it.type == type
+                    },
+                    priorityOrder = priorityOrder ?: HabitOrder.NONE
+                )
+                return true
+            }
+
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return true
+            }
+        })
+    }
+
+    private fun showBottomSheet() {
+        BottomSheetBehavior.from(binding.fragmentHabitsListBottomSheet)
+    }
+
     private fun initFilters() {
-        filters = HabitFilter(
-            types = if (type == null) null else listOf(type!!)
-        )
+        filters = { habit ->
+            type?.let { type ->
+                habit.type == type
+            } ?: true
+        }
     }
 
     private fun initViewModel() {

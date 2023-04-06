@@ -5,10 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ivan.habitsapp.HabitsProvider
 import com.ivan.habitsapp.model.Habit
-import com.ivan.habitsapp.model.HabitFilter
+import com.ivan.habitsapp.model.HabitOrder
 
 class HabitsListViewModel(
-    private val filters: HabitFilter?
+    private val filters: ((Habit) -> Boolean)?
 ) : ViewModel() {
 
     private var _habitsListLiveData: MutableLiveData<List<Habit>> = MutableLiveData()
@@ -16,17 +16,32 @@ class HabitsListViewModel(
         get() = _habitsListLiveData
 
     init {
-        showHabitsWithFilters()
+        showHabitsWithFilters(filters, HabitOrder.NONE)
     }
 
-    private fun showHabitsWithFilters() {
+    fun showHabitsWithFilters(
+        titleFilter: ((Habit) -> Boolean)?,
+        priorityOrder: HabitOrder
+    ) {
         var filteredHabits = HabitsProvider.habits
-        filters?.let {
-            filteredHabits = filteredHabits.filter {
-                (filters.title == null || it.title.contains(filters.title))
-                        && (filters.types == null || filters.types.contains(it.type))
+            .filter { habit ->
+                titleFilter?.invoke(habit) ?: true
             }.toMutableList()
+
+        filteredHabits = when (priorityOrder) {
+            HabitOrder.ASCENDING -> {
+                filteredHabits
+                    .sortedBy { it.priority }
+                    .toMutableList()
+            }
+            HabitOrder.DESCENDING -> {
+                filteredHabits
+                    .sortedByDescending { it.priority }
+                    .toMutableList()
+            }
+            HabitOrder.NONE -> filteredHabits
         }
+
         _habitsListLiveData.value = filteredHabits
     }
 }
