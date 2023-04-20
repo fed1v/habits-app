@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.ivan.habitsapp.databinding.HabitItemViewBinding
-import com.ivan.habitsapp.model.Habit
+import com.ivan.habitsapp.model.database.Habit
 import com.ivan.habitsapp.util.OnItemClickListener
 
 class HabitAdapter(

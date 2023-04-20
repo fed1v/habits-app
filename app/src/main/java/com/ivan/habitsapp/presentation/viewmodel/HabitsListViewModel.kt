@@ -3,12 +3,13 @@ package com.ivan.habitsapp.presentation.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.ivan.habitsapp.HabitsProvider
-import com.ivan.habitsapp.model.Habit
 import com.ivan.habitsapp.model.HabitOrder
+import com.ivan.habitsapp.model.database.Habit
+import com.ivan.habitsapp.model.database.HabitsDao
 
 class HabitsListViewModel(
-    private val filters: ((Habit) -> Boolean)?
+    private val filters: ((Habit) -> Boolean)?,
+    private val habitsDao: HabitsDao
 ) : ViewModel() {
 
     private var _habitsListLiveData: MutableLiveData<List<Habit>> = MutableLiveData()
@@ -23,7 +24,7 @@ class HabitsListViewModel(
         titleFilter: ((Habit) -> Boolean)?,
         priorityOrder: HabitOrder
     ) {
-        var filteredHabits = HabitsProvider.habits
+        var filteredHabits = habitsDao.getAllHabits()
             .filter { habit ->
                 titleFilter?.invoke(habit) ?: true
             }.toMutableList()

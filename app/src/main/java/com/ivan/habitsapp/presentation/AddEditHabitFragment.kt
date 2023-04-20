@@ -12,10 +12,15 @@ import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.room.Room
 import com.ivan.habitsapp.R
 import com.ivan.habitsapp.databinding.FragmentAddEditHabitBinding
 import com.ivan.habitsapp.model.*
+import com.ivan.habitsapp.model.database.Habit
+import com.ivan.habitsapp.model.database.HabitsDao
+import com.ivan.habitsapp.model.database.HabitsDatabase
 import com.ivan.habitsapp.presentation.viewmodel.AddEditHabitViewModel
+import com.ivan.habitsapp.presentation.viewmodel.viewmodel_factory.AddEditHabitViewModelFactory
 
 class AddEditHabitFragment : Fragment() {
 
@@ -30,6 +35,9 @@ class AddEditHabitFragment : Fragment() {
             }
         }
     }
+
+    private lateinit var habitsDatabase: HabitsDatabase
+    private lateinit var habitsDao: HabitsDao
 
     private lateinit var viewModel: AddEditHabitViewModel
 
@@ -56,6 +64,7 @@ class AddEditHabitFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initDatabase()
         initViewModel()
         initButtonSaveClickListener()
         initColorClickListeners()
@@ -66,8 +75,24 @@ class AddEditHabitFragment : Fragment() {
         super.onStart()
     }
 
+    private fun initDatabase() {
+        habitsDatabase = Room.databaseBuilder(
+            requireContext().applicationContext,
+            HabitsDatabase::class.java,
+            "habits_database"
+        )
+            .allowMainThreadQueries()
+            .build()
+
+        habitsDao = habitsDatabase.getDao()
+    }
+
     private fun initViewModel() {
-        viewModel = ViewModelProvider(requireActivity())[AddEditHabitViewModel::class.java]
+
+        viewModel = ViewModelProvider(
+            requireActivity(),
+            AddEditHabitViewModelFactory(habitsDao)
+        )[AddEditHabitViewModel::class.java]
 
         viewModel.habitLiveData.observe(viewLifecycleOwner) {
             initFields(it)

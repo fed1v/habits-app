@@ -3,10 +3,12 @@ package com.ivan.habitsapp.presentation.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.ivan.habitsapp.HabitsProvider
-import com.ivan.habitsapp.model.Habit
+import com.ivan.habitsapp.model.database.Habit
+import com.ivan.habitsapp.model.database.HabitsDao
 
-class AddEditHabitViewModel: ViewModel() {
+class AddEditHabitViewModel(
+    private val habitsDao: HabitsDao
+) : ViewModel() {
 
     private var _habitLiveData: MutableLiveData<Habit?> = MutableLiveData<Habit?>()
     val habitLiveData: LiveData<Habit?>
@@ -16,15 +18,10 @@ class AddEditHabitViewModel: ViewModel() {
         _habitLiveData.value = habit
     }
 
-    fun saveHabit(oldHabit: Habit?, newHabit: Habit) {
-        if (oldHabit == null) {
-            HabitsProvider.habits.add(newHabit)
-            return
-        }
-
-        val index = HabitsProvider.habits.indexOf(oldHabit)
-        if (index >= 0 && index < HabitsProvider.habits.size) {
-            HabitsProvider.habits[index] = newHabit
-        }
+    fun saveHabit(
+        oldHabit: Habit?,
+        newHabit: Habit
+    ) {
+        habitsDao.insertHabit(newHabit.copy(id = oldHabit?.id))
     }
 }

@@ -7,12 +7,15 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.room.Room
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.ivan.habitsapp.R
 import com.ivan.habitsapp.databinding.FragmentHabitsListBinding
-import com.ivan.habitsapp.model.Habit
+import com.ivan.habitsapp.model.database.Habit
 import com.ivan.habitsapp.model.HabitOrder
 import com.ivan.habitsapp.model.HabitType
+import com.ivan.habitsapp.model.database.HabitsDao
+import com.ivan.habitsapp.model.database.HabitsDatabase
 import com.ivan.habitsapp.presentation.adapter.HabitAdapter
 import com.ivan.habitsapp.presentation.viewmodel.HabitsListViewModel
 import com.ivan.habitsapp.presentation.viewmodel.viewmodel_factory.HabitsListViewModelFactory
@@ -33,6 +36,9 @@ class HabitsListFragment : Fragment() {
             }
         }
     }
+
+    private lateinit var habitsDatabase: HabitsDatabase
+    private lateinit var habitsDao: HabitsDao
 
     private lateinit var viewModel: HabitsListViewModel
 
@@ -75,6 +81,7 @@ class HabitsListFragment : Fragment() {
 
         initFilters()
         initRecyclerView()
+        initDatabase()
         initViewModel()
 
         showBottomSheet()
@@ -85,6 +92,18 @@ class HabitsListFragment : Fragment() {
         binding.buttonAdd.setOnClickListener {
             openAddEditHabitFragment(null)
         }
+    }
+
+    private fun initDatabase() {
+        habitsDatabase = Room.databaseBuilder(
+            requireContext().applicationContext,
+            HabitsDatabase::class.java,
+            "habits_database"
+        )
+            .allowMainThreadQueries()
+            .build()
+
+        habitsDao = habitsDatabase.getDao()
     }
 
     private fun initResetButton() {
@@ -115,18 +134,11 @@ class HabitsListFragment : Fragment() {
             SearchView.OnQueryTextListener {
 
             override fun onQueryTextChange(newText: String): Boolean {
-                viewModel.showHabitsWithFilters(
-                    titleFilter = {
-                        it.title.contains(newText) && it.type == type
-                    },
-                    priorityOrder = priorityOrder ?: HabitOrder.NONE
-                )
+                filterHabits(newText)
                 return true
             }
 
-            override fun onQueryTextSubmit(query: String): Boolean {
-                return true
-            }
+            override fun onQueryTextSubmit(query: String): Boolean = true
         })
     }
 
@@ -145,12 +157,14 @@ class HabitsListFragment : Fragment() {
     private fun initViewModel() {
         viewModel = ViewModelProvider(
             this,
-            HabitsListViewModelFactory(filters)
+            HabitsListViewModelFactory(filters, habitsDao)
         )[HabitsListViewModel::class.java]
 
         viewModel.habitsListLiveData.observe(viewLifecycleOwner) {
-            habits = it.toMutableList()
-            habitAdapter.habits = habits
+            it?.let {
+                habits = it.toMutableList()
+                habitAdapter.habits = habits
+            }
         }
     }
 
@@ -162,6 +176,15 @@ class HabitsListFragment : Fragment() {
         (requireActivity() as MainActivity)
             .navController
             .navigate(R.id.action_habitsViewPagerFragment_to_addEditHabitFragment, bundle)
+    }
+
+    private fun filterHabits(textQuery: String) {
+        viewModel.showHabitsWithFilters(
+            titleFilter = {
+                it.title.contains(textQuery) && it.type == type
+            },
+            priorityOrder = priorityOrder ?: HabitOrder.NONE
+        )
     }
 
     private fun initRecyclerView() {
