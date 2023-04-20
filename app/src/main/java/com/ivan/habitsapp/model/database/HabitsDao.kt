@@ -1,5 +1,6 @@
 package com.ivan.habitsapp.model.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -9,7 +10,7 @@ import androidx.room.Query
 interface HabitsDao {
 
     @Query("SELECT * FROM habits_table")
-    fun getAllHabits(): List<Habit>
+    fun getAllHabits(): LiveData<List<Habit>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertHabit(habit: Habit)
