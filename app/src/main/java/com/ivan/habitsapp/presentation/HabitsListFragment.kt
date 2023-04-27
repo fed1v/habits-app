@@ -11,9 +11,9 @@ import androidx.room.Room
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.ivan.habitsapp.R
 import com.ivan.habitsapp.databinding.FragmentHabitsListBinding
-import com.ivan.habitsapp.model.database.Habit
 import com.ivan.habitsapp.model.HabitOrder
 import com.ivan.habitsapp.model.HabitType
+import com.ivan.habitsapp.model.database.Habit
 import com.ivan.habitsapp.model.database.HabitsDao
 import com.ivan.habitsapp.model.database.HabitsDatabase
 import com.ivan.habitsapp.presentation.adapter.HabitAdapter

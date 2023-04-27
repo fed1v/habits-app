@@ -1,12 +1,11 @@
 package com.ivan.habitsapp.presentation.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.ivan.habitsapp.model.HabitOrder
 import com.ivan.habitsapp.model.database.Habit
 import com.ivan.habitsapp.model.database.HabitsDao
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class HabitsListViewModel(
     private val filters: ((Habit) -> Boolean)?,
@@ -14,7 +13,9 @@ class HabitsListViewModel(
 ) : ViewModel() {
 
     private var habitsObserver = Observer<List<Habit>> {
-        _habitsListLiveData.value = filterHabits(filters, HabitOrder.NONE)
+        viewModelScope.launch(Dispatchers.IO) {
+            _habitsListLiveData.postValue(filterHabits(filters, HabitOrder.NONE))
+        }
     }
 
     private var _habitsListLiveData: MutableLiveData<List<Habit>> = MutableLiveData()
@@ -24,15 +25,22 @@ class HabitsListViewModel(
     private var _habitsFromDatabaseLivedata: LiveData<List<Habit>>? = null
 
     init {
-        _habitsFromDatabaseLivedata = habitsDao.getAllHabits()
-        _habitsFromDatabaseLivedata?.observeForever(habitsObserver)
+        viewModelScope.launch(Dispatchers.IO) {
+            _habitsFromDatabaseLivedata = habitsDao.getAllHabits()
+
+            launch(Dispatchers.Main) {
+                _habitsFromDatabaseLivedata?.observeForever(habitsObserver)
+            }
+        }
     }
 
     fun showHabitsWithFilters(
         titleFilter: ((Habit) -> Boolean)?,
         priorityOrder: HabitOrder
     ) {
-        _habitsListLiveData.value = filterHabits(titleFilter, priorityOrder)
+        viewModelScope.launch(Dispatchers.IO) {
+            _habitsListLiveData.postValue(filterHabits(titleFilter, priorityOrder))
+        }
     }
 
     private fun filterHabits(
