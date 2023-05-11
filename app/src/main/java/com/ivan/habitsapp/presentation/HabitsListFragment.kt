@@ -16,10 +16,18 @@ import com.ivan.habitsapp.model.HabitType
 import com.ivan.habitsapp.model.database.Habit
 import com.ivan.habitsapp.model.database.HabitsDao
 import com.ivan.habitsapp.model.database.HabitsDatabase
+import com.ivan.habitsapp.model.remote.AuthInterceptor
+import com.ivan.habitsapp.model.remote.HabitsService
+import com.ivan.habitsapp.model.remote.baseUrl
+import com.ivan.habitsapp.model.repository.HabitsRepository
 import com.ivan.habitsapp.presentation.adapter.HabitAdapter
 import com.ivan.habitsapp.presentation.viewmodel.HabitsListViewModel
 import com.ivan.habitsapp.presentation.viewmodel.viewmodel_factory.HabitsListViewModelFactory
 import com.ivan.habitsapp.util.OnItemClickListener
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class HabitsListFragment : Fragment() {
 
@@ -40,6 +48,11 @@ class HabitsListFragment : Fragment() {
     private lateinit var habitsDatabase: HabitsDatabase
     private lateinit var habitsDao: HabitsDao
 
+    private lateinit var habitsRepository: HabitsRepository
+
+    private lateinit var authInterceptor: AuthInterceptor
+    private lateinit var habitsService: HabitsService
+
     private lateinit var viewModel: HabitsListViewModel
 
     private lateinit var binding: FragmentHabitsListBinding
@@ -50,6 +63,8 @@ class HabitsListFragment : Fragment() {
 
     private var filters: ((Habit) -> Boolean)? = null
     private var priorityOrder: HabitOrder? = null
+
+    private val token = "64f15871-0c48-4db0-9c3f-690ba8d8b6a7"
 
     private val habitItemClickListener = object : OnItemClickListener<Habit> {
         override fun onItemClicked(item: Habit) {
@@ -82,7 +97,11 @@ class HabitsListFragment : Fragment() {
         initFilters()
         initRecyclerView()
         initDatabase()
+        initHabitsApi()
+        initRepository()
         initViewModel()
+
+        updateDataOnServer()
 
         showBottomSheet()
         initSearchView()
@@ -92,6 +111,31 @@ class HabitsListFragment : Fragment() {
         binding.buttonAdd.setOnClickListener {
             openAddEditHabitFragment(null)
         }
+    }
+
+    private fun initRepository() {
+        habitsRepository = HabitsRepository(habitsService, habitsDao, token)
+    }
+
+    private fun updateDataOnServer() {
+        viewModel.updateDataOnServer()
+    }
+
+    private fun initHabitsApi() {
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .build()
+
+        habitsService = Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .build()
+            .create(HabitsService::class.java)
     }
 
     private fun initDatabase() {
@@ -157,7 +201,7 @@ class HabitsListFragment : Fragment() {
     private fun initViewModel() {
         viewModel = ViewModelProvider(
             this,
-            HabitsListViewModelFactory(filters, habitsDao)
+            HabitsListViewModelFactory(filters, habitsDao, habitsRepository)
         )[HabitsListViewModel::class.java]
 
         viewModel.habitsListLiveData.observe(viewLifecycleOwner) {

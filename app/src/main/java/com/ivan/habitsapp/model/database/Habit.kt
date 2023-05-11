@@ -15,12 +15,15 @@ import kotlinx.parcelize.Parcelize
 @Entity(tableName = "habits_table")
 @TypeConverters(Converters::class)
 data class Habit(
-    @PrimaryKey(autoGenerate = true)
-    var id: Int? = null,
+    @PrimaryKey
+    val id: Int? = null,
+    var uid: String = "",
     val title: String,
     val description: String,
     val priority: HabitPriority,
     val type: HabitType,
+    val date: Int,
     val periodicity: HabitPeriodicity,
-    val color: Int = Color.parseColor("#66BB6A")
+    val color: Int = Color.parseColor("#66BB6A"),
+    val isSynced: Boolean = false
 ) : Parcelable

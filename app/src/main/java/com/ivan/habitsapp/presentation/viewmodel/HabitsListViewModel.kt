@@ -4,12 +4,14 @@ import androidx.lifecycle.*
 import com.ivan.habitsapp.model.HabitOrder
 import com.ivan.habitsapp.model.database.Habit
 import com.ivan.habitsapp.model.database.HabitsDao
+import com.ivan.habitsapp.model.repository.HabitsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class HabitsListViewModel(
     private val filters: ((Habit) -> Boolean)?,
-    private val habitsDao: HabitsDao
+    private val habitsDao: HabitsDao,
+    private val habitsRepository: HabitsRepository
 ) : ViewModel() {
 
     private var habitsObserver = Observer<List<Habit>> {
@@ -40,6 +42,12 @@ class HabitsListViewModel(
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             _habitsListLiveData.postValue(filterHabits(titleFilter, priorityOrder))
+        }
+    }
+
+    fun updateDataOnServer(){
+        viewModelScope.launch(Dispatchers.IO){
+            habitsRepository.updateDataOnServer()
         }
     }
 

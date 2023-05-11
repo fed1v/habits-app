@@ -19,8 +19,16 @@ import com.ivan.habitsapp.model.*
 import com.ivan.habitsapp.model.database.Habit
 import com.ivan.habitsapp.model.database.HabitsDao
 import com.ivan.habitsapp.model.database.HabitsDatabase
+import com.ivan.habitsapp.model.remote.AuthInterceptor
+import com.ivan.habitsapp.model.remote.HabitsService
+import com.ivan.habitsapp.model.remote.baseUrl
+import com.ivan.habitsapp.model.repository.HabitsRepository
 import com.ivan.habitsapp.presentation.viewmodel.AddEditHabitViewModel
 import com.ivan.habitsapp.presentation.viewmodel.viewmodel_factory.AddEditHabitViewModelFactory
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class AddEditHabitFragment : Fragment() {
 
@@ -36,14 +44,21 @@ class AddEditHabitFragment : Fragment() {
         }
     }
 
+    private lateinit var habitsRepository: HabitsRepository
+
     private lateinit var habitsDatabase: HabitsDatabase
     private lateinit var habitsDao: HabitsDao
+
+    private lateinit var authInterceptor: AuthInterceptor
+    private lateinit var habitsService: HabitsService
 
     private lateinit var viewModel: AddEditHabitViewModel
 
     private lateinit var binding: FragmentAddEditHabitBinding
     private var habit: Habit? = null
     private var chosenColor: Int? = null
+
+    private val token = "64f15871-0c48-4db0-9c3f-690ba8d8b6a7"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +80,10 @@ class AddEditHabitFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         initDatabase()
+        initHabitsApi()
+        initRepository()
         initViewModel()
+
         initButtonSaveClickListener()
         initColorClickListeners()
     }
@@ -73,6 +91,25 @@ class AddEditHabitFragment : Fragment() {
     override fun onStart() {
         viewModel.showHabit(habit)
         super.onStart()
+    }
+
+    private fun initHabitsApi() {
+        authInterceptor = AuthInterceptor(token)
+
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .build()
+
+        habitsService = Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .build()
+            .create(HabitsService::class.java)
     }
 
     private fun initDatabase() {
@@ -87,11 +124,15 @@ class AddEditHabitFragment : Fragment() {
         habitsDao = habitsDatabase.getDao()
     }
 
+    private fun initRepository() {
+        habitsRepository = HabitsRepository(habitsService, habitsDao, token)
+    }
+
     private fun initViewModel() {
 
         viewModel = ViewModelProvider(
             requireActivity(),
-            AddEditHabitViewModelFactory(habitsDao)
+            AddEditHabitViewModelFactory(habitsRepository)
         )[AddEditHabitViewModel::class.java]
 
         viewModel.habitLiveData.observe(viewLifecycleOwner) {
@@ -120,6 +161,19 @@ class AddEditHabitFragment : Fragment() {
 
             val periodsAmount = binding.edittextPeriodsAmount.text.toString().toInt()
 
+            if (binding.edittextTitle.text.toString().isBlank()) {
+                Toast.makeText(requireContext(), "Please enter Title", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (binding.edittextDescription.text.toString().isBlank()) {
+                Toast.makeText(requireContext(), "Please enter Description", Toast.LENGTH_SHORT)
+                    .show()
+                return@setOnClickListener
+            }
+
+            val date = (System.currentTimeMillis() / 1000).toInt()
+
             val newHabit = Habit(
                 title = binding.edittextTitle.text.toString(),
                 description = binding.edittextDescription.text.toString(),
@@ -128,7 +182,8 @@ class AddEditHabitFragment : Fragment() {
                 ),
                 type = HabitType.values()[checkedId],
                 periodicity = HabitPeriodicity(periodicityTimes, periodicityPeriod, periodsAmount),
-                color = chosenColor ?: habit!!.color
+                color = chosenColor ?: habit!!.color,
+                date = date
             )
 
             viewModel.saveHabit(habit, newHabit)
