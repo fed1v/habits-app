@@ -20,7 +20,8 @@ class HabitsRepository(
         val habitEntity = HabitToHabitEntityMapper().map(habit)
         try {
             val response = habitsService.putHabit(token, habitEntity)
-            val uid = response.uid
+            val uid = response.uid // добавить получение списка
+            //
             val newHabit = habit.copy(id = habit.id, uid = uid, isSynced = true)
             habitsDao.insertHabit(newHabit)
             Log.d(TAG, "Successfully saved: ${newHabit}")
