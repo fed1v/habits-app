@@ -36,6 +36,13 @@ class HabitsRepositoryImpl(
         }
     }
 
+    suspend fun syncData(){
+        val habitsRemote = habitsService.getHabits(token)
+        val habitsLocal = habitsDao.getHabitsList()
+
+        TODO()
+
+    }
     override suspend fun updateDataOnServer() {
         val habitsFromDatabase = habitsDao.getHabitsList()
 
@@ -47,7 +54,7 @@ class HabitsRepositoryImpl(
         }
     }
 
-    private suspend fun putToServer(habit: Habit) {
+    private suspend fun putToServer(habit: Habit) { // TODO edit
         val habitRemote = HabitToHabitRemoteMapper().map(habit)
         val response = habitsService.putHabit(token, habitRemote)
 

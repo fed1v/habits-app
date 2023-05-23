@@ -9,10 +9,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.ivan.data.database.HabitsDao
+import com.ivan.data.database.HabitsDatabase
+import com.ivan.data.remote.HabitsService
 import com.ivan.data.repository.HabitsRepositoryImpl
+import com.ivan.domain.model.HabitOrder
+import com.ivan.domain.model.HabitType
 import com.ivan.domain.repository.HabitsRepository
 import com.ivan.presentation.R
 import com.ivan.presentation.databinding.FragmentHabitsListBinding
+import com.ivan.presentation.di.App
 import com.ivan.presentation.model.HabitPresentation
 import com.ivan.presentation.ui.adapter.HabitAdapter
 import com.ivan.presentation.ui.viewmodel.HabitsListViewModel
@@ -22,6 +28,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Inject
 
 class HabitsListFragment : Fragment() {
 
@@ -39,23 +46,26 @@ class HabitsListFragment : Fragment() {
         }
     }
 
-    private lateinit var habitsDatabase: com.ivan.data.database.HabitsDatabase
-    private lateinit var habitsDao: com.ivan.data.database.HabitsDao
+    @Inject
+    lateinit var habitsDatabase: HabitsDatabase
+
+    private lateinit var habitsDao: HabitsDao
 
     private lateinit var habitsRepository: HabitsRepository
 
-    private lateinit var habitsService: com.ivan.data.remote.HabitsService
+    private lateinit var habitsService: HabitsService
 
+    lateinit var viewModelFactory: HabitsListViewModelFactory
     private lateinit var viewModel: HabitsListViewModel
 
     private lateinit var binding: FragmentHabitsListBinding
     private lateinit var habitAdapter: HabitAdapter
 
     private lateinit var habits: MutableList<HabitPresentation>
-    private var type: com.ivan.domain.model.HabitType? = null
+    private var type: HabitType? = null
 
     private var filters: ((HabitPresentation) -> Boolean)? = null
-    private var priorityOrder: com.ivan.domain.model.HabitOrder? = null
+    private var priorityOrder: HabitOrder? = null
 
     private val token = "64f15871-0c48-4db0-9c3f-690ba8d8b6a7"
 
@@ -93,6 +103,10 @@ class HabitsListFragment : Fragment() {
         initHabitsApi()
         initRepository()
         initViewModel()
+
+        val appComponent = (requireContext().applicationContext as App).appComponent
+
+        appComponent.injectHabitsListFragment(this)
 
         updateDataOnServer()
 

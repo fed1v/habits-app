@@ -15,14 +15,17 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.ivan.data.database.HabitsDao
 import com.ivan.data.database.HabitsDatabase
-import com.ivan.data.remote.AuthInterceptor
 import com.ivan.data.remote.HabitsService
 import com.ivan.data.remote.baseUrl
 import com.ivan.data.repository.HabitsRepositoryImpl
-import com.ivan.domain.model.*
+import com.ivan.domain.model.HabitPeriodicity
+import com.ivan.domain.model.HabitPriority
+import com.ivan.domain.model.HabitType
+import com.ivan.domain.model.Periods
 import com.ivan.domain.repository.HabitsRepository
 import com.ivan.presentation.R
 import com.ivan.presentation.databinding.FragmentAddEditHabitBinding
+import com.ivan.presentation.di.App
 import com.ivan.presentation.model.HabitPresentation
 import com.ivan.presentation.ui.viewmodel.AddEditHabitViewModel
 import com.ivan.presentation.ui.viewmodel.viewmodel_factory.AddEditHabitViewModelFactory
@@ -30,6 +33,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Inject
 
 class AddEditHabitFragment : Fragment() {
 
@@ -50,8 +54,9 @@ class AddEditHabitFragment : Fragment() {
     private lateinit var habitsDatabase: HabitsDatabase
     private lateinit var habitsDao: HabitsDao
 
-    private lateinit var authInterceptor: AuthInterceptor
     private lateinit var habitsService: HabitsService
+
+    @Inject lateinit var viewModelFactory: AddEditHabitViewModelFactory
 
     private lateinit var viewModel: AddEditHabitViewModel
 
@@ -80,6 +85,9 @@ class AddEditHabitFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val appComponent = (requireContext().applicationContext as App).appComponent
+        appComponent.injectAddEditHabitFragment(this)
+
         initDatabase()
         initHabitsApi()
         initRepository()
@@ -95,8 +103,6 @@ class AddEditHabitFragment : Fragment() {
     }
 
     private fun initHabitsApi() {
-        authInterceptor = AuthInterceptor(token)
-
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
@@ -133,7 +139,8 @@ class AddEditHabitFragment : Fragment() {
 
         viewModel = ViewModelProvider(
             requireActivity(),
-            AddEditHabitViewModelFactory(habitsRepository)
+            viewModelFactory
+            //AddEditHabitViewModelFactory(habitsRepository)
         )[AddEditHabitViewModel::class.java]
 
         viewModel.habitLiveData.observe(viewLifecycleOwner) {

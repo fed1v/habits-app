@@ -13,5 +13,7 @@ interface HabitsService {
     ): HabitResponseBody
 
     @GET("habit")
-    suspend fun getHabits(): List<HabitRemote>
+    suspend fun getHabits(
+        @Header("Authorization") token: String
+    ): List<HabitRemote>
 }
