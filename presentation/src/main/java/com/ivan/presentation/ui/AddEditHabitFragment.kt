@@ -12,59 +12,32 @@ import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.room.Room
-import com.ivan.data.database.HabitsDao
-import com.ivan.data.database.HabitsDatabase
-import com.ivan.data.remote.HabitsService
-import com.ivan.data.remote.baseUrl
-import com.ivan.data.repository.HabitsRepositoryImpl
 import com.ivan.domain.model.HabitPeriodicity
 import com.ivan.domain.model.HabitPriority
 import com.ivan.domain.model.HabitType
 import com.ivan.domain.model.Periods
-import com.ivan.domain.repository.HabitsRepository
 import com.ivan.presentation.R
 import com.ivan.presentation.databinding.FragmentAddEditHabitBinding
 import com.ivan.presentation.di.App
 import com.ivan.presentation.model.HabitPresentation
 import com.ivan.presentation.ui.viewmodel.AddEditHabitViewModel
 import com.ivan.presentation.ui.viewmodel.viewmodel_factory.AddEditHabitViewModelFactory
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Inject
 
 class AddEditHabitFragment : Fragment() {
 
     companion object {
-        private const val ARG_PARAM = "HABIT_PARAM"
-
-        fun newInstance(habit: HabitPresentation): AddEditHabitFragment {
-            return AddEditHabitFragment().apply {
-                val args = Bundle()
-                args.putParcelable(ARG_PARAM, habit)
-                arguments = args
-            }
-        }
+        const val ARG_PARAM = "HABIT_PARAM"
     }
 
-    private lateinit var habitsRepository: HabitsRepository
-
-    private lateinit var habitsDatabase: HabitsDatabase
-    private lateinit var habitsDao: HabitsDao
-
-    private lateinit var habitsService: HabitsService
-
-    @Inject lateinit var viewModelFactory: AddEditHabitViewModelFactory
+    @Inject
+    lateinit var viewModelFactory: AddEditHabitViewModelFactory
 
     private lateinit var viewModel: AddEditHabitViewModel
 
     private lateinit var binding: FragmentAddEditHabitBinding
     private var habit: HabitPresentation? = null
     private var chosenColor: Int? = null
-
-    private val token = "64f15871-0c48-4db0-9c3f-690ba8d8b6a7"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,16 +58,17 @@ class AddEditHabitFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val appComponent = (requireContext().applicationContext as App).appComponent
-        appComponent.injectAddEditHabitFragment(this)
+        injectDependencies()
 
-        initDatabase()
-        initHabitsApi()
-        initRepository()
         initViewModel()
 
         initButtonSaveClickListener()
         initColorClickListeners()
+    }
+
+    private fun injectDependencies() {
+        val appComponent = (requireContext().applicationContext as App).appComponent
+        appComponent.injectAddEditHabitFragment(this)
     }
 
     override fun onStart() {
@@ -102,45 +76,10 @@ class AddEditHabitFragment : Fragment() {
         super.onStart()
     }
 
-    private fun initHabitsApi() {
-        val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        }
-
-        val client = OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
-            .build()
-
-        habitsService = Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(client)
-            .build()
-            .create(HabitsService::class.java)
-    }
-
-    private fun initDatabase() {
-        habitsDatabase = Room.databaseBuilder(
-            requireContext().applicationContext,
-            HabitsDatabase::class.java,
-            "habits_database"
-        )
-            .allowMainThreadQueries()
-            .build()
-
-        habitsDao = habitsDatabase.getDao()
-    }
-
-    private fun initRepository() {
-        habitsRepository = HabitsRepositoryImpl(habitsService, habitsDao, token)
-    }
-
     private fun initViewModel() {
-
         viewModel = ViewModelProvider(
             requireActivity(),
             viewModelFactory
-            //AddEditHabitViewModelFactory(habitsRepository)
         )[AddEditHabitViewModel::class.java]
 
         viewModel.habitLiveData.observe(viewLifecycleOwner) {

@@ -4,6 +4,7 @@ import android.content.Context
 import com.ivan.data.database.HabitsDao
 import com.ivan.data.database.HabitsDatabase
 import com.ivan.data.remote.HabitsService
+import com.ivan.data.remote.baseUrl
 import com.ivan.data.repository.HabitsRepositoryImpl
 import com.ivan.domain.repository.HabitsRepository
 import dagger.Module
@@ -32,7 +33,7 @@ class DataModule(
             .build()
 
         return Retrofit.Builder()
-            .baseUrl(com.ivan.data.remote.baseUrl)
+            .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()

@@ -36,22 +36,23 @@ class HabitsRepositoryImpl(
         }
     }
 
-    suspend fun syncData(){
-        val habitsRemote = habitsService.getHabits(token)
-        val habitsLocal = habitsDao.getHabitsList()
-
+    suspend fun syncData() {
+    //    val habitsRemote = habitsService.getHabits(token)
+    //    val habitsLocal = habitsDao.getHabitsList()
+//
         TODO()
 
     }
+
     override suspend fun updateDataOnServer() {
         val habitsFromDatabase = habitsDao.getHabitsList()
 
-        habitsFromDatabase.forEach { habitEntity ->
-            if (!habitEntity.isSynced) {
-                val habit = habitEntityToHabitMapper.map(habitEntity)
-                saveHabit(habit)
-            }
-        }
+        // habitsFromDatabase.forEach { habitEntity ->
+        //     if (!habitEntity.isSynced) {
+        //         val habit = habitEntityToHabitMapper.map(habitEntity)
+        //         saveHabit(habit)
+        //     }
+        // }
     }
 
     private suspend fun putToServer(habit: Habit) { // TODO edit
@@ -61,7 +62,13 @@ class HabitsRepositoryImpl(
         val uid = response.uid // добавить получение списка
 
         val newHabit = habit.copy(id = habit.id, uid = uid, isSynced = true)
+
+        Log.d(TAG, "Insert to database...")
         val habitEntity = habitToHabitEntityMapper.map(newHabit)
+        val content = habitsDao.getHabitsList().map { it.title }
+        Log.d(TAG, "content")
+        Log.d(TAG, "database = ${content ?: emptyList()}")
+        Log.d(TAG, "Inserted")
 
         habitsDao.insertHabit(habitEntity)
         Log.d(TAG, "Successfully saved: ${habitEntity}")

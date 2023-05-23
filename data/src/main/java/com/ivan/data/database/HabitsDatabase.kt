@@ -12,7 +12,7 @@ abstract class HabitsDatabase : RoomDatabase() {
 
     companion object {
         private var INSTANCE: HabitsDatabase? = null
-        private const val DB_NAME = "rick_and_morty_db"
+        private const val DB_NAME = "habits_database"
 
         fun getInstance(context: Context): HabitsDatabase {
             if (INSTANCE == null) {
