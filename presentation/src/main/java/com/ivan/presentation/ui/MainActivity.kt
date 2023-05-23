@@ -1,4 +1,4 @@
-package com.ivan.habitsapp.presentation
+package com.ivan.presentation.ui
 
 import android.os.Bundle
 import android.util.Log
@@ -9,8 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import com.ivan.habitsapp.R
-import com.ivan.habitsapp.databinding.ActivityMainBinding
+import com.ivan.presentation.R
+import com.ivan.presentation.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,23 +19,14 @@ class MainActivity : AppCompatActivity() {
     lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("DEBUGGG", "OnCreate!!!1!")
         super.onCreate(savedInstanceState)
-        Log.d("DEBUGGG", "OnCreate!!!..................!2")
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        Log.d("DEBUGGG", "OnCreate!!!..................!3")
-
 
         navController = Navigation.findNavController(this, R.id.mainActivityNavHost)
 
         initDrawerLayoutNavigation()
         openHabitsViewPagerFragment()
-
-        Log.d("DEBUGGG", "OnCreate!!!..................!4")
-
     }
 
     private fun initDrawerLayoutNavigation() {

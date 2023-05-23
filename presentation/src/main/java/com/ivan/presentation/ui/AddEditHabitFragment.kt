@@ -1,4 +1,4 @@
-package com.ivan.habitsapp.presentation
+package com.ivan.presentation.ui
 
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -21,11 +21,11 @@ import com.ivan.data.remote.baseUrl
 import com.ivan.data.repository.HabitsRepositoryImpl
 import com.ivan.domain.model.*
 import com.ivan.domain.repository.HabitsRepository
-import com.ivan.habitsapp.R
-import com.ivan.habitsapp.databinding.FragmentAddEditHabitBinding
-import com.ivan.habitsapp.presentation.viewmodel.AddEditHabitViewModel
-import com.ivan.habitsapp.presentation.viewmodel.viewmodel_factory.AddEditHabitViewModelFactory
+import com.ivan.presentation.R
+import com.ivan.presentation.databinding.FragmentAddEditHabitBinding
 import com.ivan.presentation.model.HabitPresentation
+import com.ivan.presentation.ui.viewmodel.AddEditHabitViewModel
+import com.ivan.presentation.ui.viewmodel.viewmodel_factory.AddEditHabitViewModelFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit

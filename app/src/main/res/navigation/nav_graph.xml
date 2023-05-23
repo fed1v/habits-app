@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/habitsViewPagerFragment"
-        android:name="com.ivan.habitsapp.presentation.HabitsViewPagerFragment"
+        android:name="com.ivan.presentation.ui.HabitsViewPagerFragment"
         android:label="HabitsViewPagerFragment">
         <action
             android:id="@+id/action_habitsViewPagerFragment_to_appInfoFragment"
@@ -21,7 +21,7 @@
     </fragment>
     <fragment
         android:id="@+id/addEditHabitFragment"
-        android:name="com.ivan.habitsapp.presentation.AddEditHabitFragment"
+        android:name="com.ivan.presentation.ui.AddEditHabitFragment"
         android:label="AddEditHabitFragment">
         <action
             android:id="@+id/action_addEditHabitFragment_to_habitsViewPagerFragment"
@@ -32,7 +32,7 @@
     </fragment>
     <fragment
         android:id="@+id/appInfoFragment"
-        android:name="com.ivan.habitsapp.presentation.AppInfoFragment"
+        android:name="com.ivan.presentation.ui.AppInfoFragment"
         android:label="AppInfoFragment">
         <action
             android:id="@+id/action_appInfoFragment_to_habitsViewPagerFragment"
@@ -40,7 +40,7 @@
     </fragment>
     <fragment
         android:id="@+id/habitsListFragment"
-        android:name="com.ivan.habitsapp.presentation.HabitsListFragment"
+        android:name="com.ivan.presentation.ui.HabitsListFragment"
         android:label="HabitsListFragment">
         <action
             android:id="@+id/action_habitsListFragment_to_appInfoFragment"

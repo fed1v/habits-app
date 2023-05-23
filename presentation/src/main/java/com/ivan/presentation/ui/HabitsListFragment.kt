@@ -1,4 +1,4 @@
-package com.ivan.habitsapp.presentation
+package com.ivan.presentation.ui
 
 import android.os.Bundle
 import android.util.Log
@@ -12,13 +12,13 @@ import androidx.room.Room
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.ivan.data.repository.HabitsRepositoryImpl
 import com.ivan.domain.repository.HabitsRepository
-import com.ivan.habitsapp.R
-import com.ivan.habitsapp.databinding.FragmentHabitsListBinding
-import com.ivan.habitsapp.presentation.adapter.HabitAdapter
-import com.ivan.habitsapp.presentation.viewmodel.HabitsListViewModel
-import com.ivan.habitsapp.presentation.viewmodel.viewmodel_factory.HabitsListViewModelFactory
-import com.ivan.habitsapp.util.OnItemClickListener
+import com.ivan.presentation.R
+import com.ivan.presentation.databinding.FragmentHabitsListBinding
 import com.ivan.presentation.model.HabitPresentation
+import com.ivan.presentation.ui.adapter.HabitAdapter
+import com.ivan.presentation.ui.viewmodel.HabitsListViewModel
+import com.ivan.presentation.ui.viewmodel.viewmodel_factory.HabitsListViewModelFactory
+import com.ivan.presentation.util.OnItemClickListener
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -156,12 +156,18 @@ class HabitsListFragment : Fragment() {
     private fun initRadioGroup() {
         binding.fragmentHabitsListOrderByPriorityAscending.setOnClickListener {
             priorityOrder = com.ivan.domain.model.HabitOrder.ASCENDING
-            viewModel.showHabitsWithFilters({ it.type == type }, priorityOrder ?: com.ivan.domain.model.HabitOrder.NONE)
+            viewModel.showHabitsWithFilters(
+                { it.type == type },
+                priorityOrder ?: com.ivan.domain.model.HabitOrder.NONE
+            )
         }
 
         binding.fragmentHabitsListOrderByPriorityDescending.setOnClickListener {
             priorityOrder = com.ivan.domain.model.HabitOrder.DESCENDING
-            viewModel.showHabitsWithFilters({ it.type == type }, priorityOrder ?: com.ivan.domain.model.HabitOrder.NONE)
+            viewModel.showHabitsWithFilters(
+                { it.type == type },
+                priorityOrder ?: com.ivan.domain.model.HabitOrder.NONE
+            )
         }
     }
 

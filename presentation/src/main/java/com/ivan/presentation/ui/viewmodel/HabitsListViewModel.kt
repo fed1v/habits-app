@@ -1,4 +1,4 @@
-package com.ivan.habitsapp.presentation.viewmodel
+package com.ivan.presentation.ui.viewmodel
 
 import androidx.lifecycle.*
 import com.ivan.data.mappers.HabitEntityToHabitMapper

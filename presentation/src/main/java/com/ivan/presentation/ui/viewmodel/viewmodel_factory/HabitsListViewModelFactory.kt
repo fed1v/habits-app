@@ -1,10 +1,10 @@
-package com.ivan.habitsapp.presentation.viewmodel.viewmodel_factory
+package com.ivan.presentation.ui.viewmodel.viewmodel_factory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ivan.data.database.HabitsDao
 import com.ivan.domain.repository.HabitsRepository
-import com.ivan.habitsapp.presentation.viewmodel.HabitsListViewModel
+import com.ivan.presentation.ui.viewmodel.HabitsListViewModel
 import com.ivan.presentation.model.HabitPresentation
 
 class HabitsListViewModelFactory(

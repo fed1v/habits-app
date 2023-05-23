@@ -1,9 +1,9 @@
-package com.ivan.habitsapp.presentation.viewmodel.viewmodel_factory
+package com.ivan.presentation.ui.viewmodel.viewmodel_factory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ivan.domain.repository.HabitsRepository
-import com.ivan.habitsapp.presentation.viewmodel.AddEditHabitViewModel
+import com.ivan.presentation.ui.viewmodel.AddEditHabitViewModel
 
 class AddEditHabitViewModelFactory(
     private val habitsRepository: HabitsRepository

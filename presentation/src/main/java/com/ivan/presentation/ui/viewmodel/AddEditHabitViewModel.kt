@@ -1,4 +1,4 @@
-package com.ivan.habitsapp.presentation.viewmodel
+package com.ivan.presentation.ui.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

@@ -1,12 +1,13 @@
-package com.ivan.habitsapp.presentation.adapter
+package com.ivan.presentation.ui.adapter
 
 import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.recyclerview.widget.RecyclerView
-import com.ivan.habitsapp.databinding.HabitItemViewBinding
-import com.ivan.habitsapp.util.OnItemClickListener
+import com.ivan.presentation.databinding.HabitItemViewBinding
 import com.ivan.presentation.model.HabitPresentation
+import com.ivan.presentation.util.OnItemClickListener
 
 class HabitAdapter(
     private val listener: OnItemClickListener<HabitPresentation>

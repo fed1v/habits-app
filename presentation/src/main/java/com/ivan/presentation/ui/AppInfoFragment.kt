@@ -1,11 +1,11 @@
-package com.ivan.habitsapp.presentation
+package com.ivan.presentation.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.ivan.habitsapp.databinding.FragmentAppInfoBinding
+import com.ivan.presentation.databinding.FragmentAppInfoBinding
 
 class AppInfoFragment : Fragment() {
     companion object {

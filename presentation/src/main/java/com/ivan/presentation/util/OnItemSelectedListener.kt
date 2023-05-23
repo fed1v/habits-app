@@ -1,4 +1,4 @@
-package com.ivan.habitsapp.util
+package com.ivan.presentation.util
 
 interface OnItemClickListener<T> {
     fun onItemClicked(item: T)

@@ -1,4 +1,4 @@
-package com.ivan.habitsapp.presentation.adapter
+package com.ivan.presentation.ui.adapter
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
