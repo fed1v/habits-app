@@ -5,14 +5,14 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.ivan.habitsapp.databinding.HabitItemViewBinding
-import com.ivan.habitsapp.model.database.Habit
 import com.ivan.habitsapp.util.OnItemClickListener
+import com.ivan.presentation.model.HabitPresentation
 
 class HabitAdapter(
-    private val listener: OnItemClickListener<Habit>
+    private val listener: OnItemClickListener<HabitPresentation>
 ) : RecyclerView.Adapter<HabitAdapter.HabitViewHolder>() {
 
-    var habits: MutableList<Habit> = mutableListOf()
+    var habits: MutableList<HabitPresentation> = mutableListOf()
         set(newValue) {
             field.clear()
             field.addAll(newValue)
@@ -33,10 +33,10 @@ class HabitAdapter(
 
     class HabitViewHolder(
         private val binding: HabitItemViewBinding,
-        private val listener: OnItemClickListener<Habit>
+        private val listener: OnItemClickListener<HabitPresentation>
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: Habit) {
+        fun bind(item: HabitPresentation) {
             binding.textviewHabitTitle.text = item.title
             binding.textviewHabitDescription.text = item.description
             binding.textviewHabitPriority.text = item.priority.toString()

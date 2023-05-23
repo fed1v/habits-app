@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">Habits App</string>
+    <string name="add_habit">Add habit</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="save">Save</string>
+    <string name="bad">Bad</string>
+    <string name="good">Good</string>
+    <string name="priority">Priority:</string>
+    <string name="type">Type</string>
+    <string name="periodicity">Periodicity:</string>
+    <string name="times">times /</string>
+    <string name="zero">0</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <string name="habits">Habits</string>
+    <string name="app_info">App info</string>
+    <string name="author_ivan_fedorov">Author: Ivan Fedorov</string>
+    <string name="error">Error</string>
+    <string name="please_select_type_of_habit">Please select type of habit</string>
+    <string name="order_by_priority">Order by Priority:</string>
+    <string name="find_by_name">Find by name</string>
+    <string name="ascending">Ascending</string>
+    <string name="descending">Descending</string>
+    <string name="reset">Reset</string>
+    <string-array name="priorities">
+        <item>Low</item>
+        <item>Medium</item>
+        <item>High</item>
+    </string-array>
+    <string-array name="periods">
+        <item>Hour</item>
+        <item>Day</item>
+        <item>Week</item>
+        <item>Month</item>
+        <item>Year</item>
+    </string-array>
+</resources>

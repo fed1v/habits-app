@@ -13,18 +13,19 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
+import com.ivan.data.database.HabitsDao
+import com.ivan.data.database.HabitsDatabase
+import com.ivan.data.remote.AuthInterceptor
+import com.ivan.data.remote.HabitsService
+import com.ivan.data.remote.baseUrl
+import com.ivan.data.repository.HabitsRepositoryImpl
+import com.ivan.domain.model.*
+import com.ivan.domain.repository.HabitsRepository
 import com.ivan.habitsapp.R
 import com.ivan.habitsapp.databinding.FragmentAddEditHabitBinding
-import com.ivan.habitsapp.model.*
-import com.ivan.habitsapp.model.database.Habit
-import com.ivan.habitsapp.model.database.HabitsDao
-import com.ivan.habitsapp.model.database.HabitsDatabase
-import com.ivan.habitsapp.model.remote.AuthInterceptor
-import com.ivan.habitsapp.model.remote.HabitsService
-import com.ivan.habitsapp.model.remote.baseUrl
-import com.ivan.habitsapp.model.repository.HabitsRepository
 import com.ivan.habitsapp.presentation.viewmodel.AddEditHabitViewModel
 import com.ivan.habitsapp.presentation.viewmodel.viewmodel_factory.AddEditHabitViewModelFactory
+import com.ivan.presentation.model.HabitPresentation
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -35,7 +36,7 @@ class AddEditHabitFragment : Fragment() {
     companion object {
         private const val ARG_PARAM = "HABIT_PARAM"
 
-        fun newInstance(habit: Habit?): AddEditHabitFragment {
+        fun newInstance(habit: HabitPresentation): AddEditHabitFragment {
             return AddEditHabitFragment().apply {
                 val args = Bundle()
                 args.putParcelable(ARG_PARAM, habit)
@@ -55,7 +56,7 @@ class AddEditHabitFragment : Fragment() {
     private lateinit var viewModel: AddEditHabitViewModel
 
     private lateinit var binding: FragmentAddEditHabitBinding
-    private var habit: Habit? = null
+    private var habit: HabitPresentation? = null
     private var chosenColor: Int? = null
 
     private val token = "64f15871-0c48-4db0-9c3f-690ba8d8b6a7"
@@ -125,7 +126,7 @@ class AddEditHabitFragment : Fragment() {
     }
 
     private fun initRepository() {
-        habitsRepository = HabitsRepository(habitsService, habitsDao, token)
+        habitsRepository = HabitsRepositoryImpl(habitsService, habitsDao, token)
     }
 
     private fun initViewModel() {
@@ -157,7 +158,8 @@ class AddEditHabitFragment : Fragment() {
 
             val periodicityTimes = binding.edittextPeriodicityAmount.text.toString().toInt()
             val periodicityPeriodString = binding.spinnerPeriodicityPeriod.selectedItem.toString()
-            val periodicityPeriod = Periods.valueOf(periodicityPeriodString.uppercase())
+            val periodicityPeriod =
+                Periods.valueOf(periodicityPeriodString.uppercase())
 
             val periodsAmount = binding.edittextPeriodsAmount.text.toString().toInt()
 
@@ -174,16 +176,21 @@ class AddEditHabitFragment : Fragment() {
 
             val date = (System.currentTimeMillis() / 1000).toInt()
 
-            val newHabit = Habit(
+            val newHabit = HabitPresentation(
                 title = binding.edittextTitle.text.toString(),
                 description = binding.edittextDescription.text.toString(),
                 priority = HabitPriority.valueOf(
                     binding.spinnerPriority.selectedItem.toString().uppercase()
                 ),
                 type = HabitType.values()[checkedId],
-                periodicity = HabitPeriodicity(periodicityTimes, periodicityPeriod, periodsAmount),
+                periodicity = HabitPeriodicity(
+                    periodicityTimes,
+                    periodicityPeriod,
+                    periodsAmount
+                ),
                 color = chosenColor ?: habit!!.color,
-                date = date
+                date = date,
+                doneDates = habit?.doneDates ?: listOf()
             )
 
             viewModel.saveHabit(habit, newHabit)
@@ -212,7 +219,7 @@ class AddEditHabitFragment : Fragment() {
         }
     }
 
-    private fun initFields(habit: Habit?) {
+    private fun initFields(habit: HabitPresentation?) {
         if (habit != null) {
             binding.edittextTitle.setText(habit.title)
             binding.edittextDescription.setText(habit.description)

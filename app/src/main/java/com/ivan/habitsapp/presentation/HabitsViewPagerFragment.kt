@@ -1,6 +1,7 @@
 package com.ivan.habitsapp.presentation
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +10,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import com.ivan.habitsapp.R
 import com.ivan.habitsapp.databinding.FragmentHabitsViewPagerBinding
-import com.ivan.habitsapp.model.HabitType
+import com.ivan.domain.model.HabitType
 import com.ivan.habitsapp.presentation.adapter.ViewPagerAdapter
 
 class HabitsViewPagerFragment : Fragment() {
@@ -22,11 +23,13 @@ class HabitsViewPagerFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.d("DEBUGGG", "HabitsViewPagerFragment onCreateView")
         binding = FragmentHabitsViewPagerBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Log.d("DEBUGGG", "HabitsViewPagerFragment onViewCreated")
         super.onViewCreated(view, savedInstanceState)
         initViewPager()
     }
@@ -34,8 +37,8 @@ class HabitsViewPagerFragment : Fragment() {
     private fun initViewPager() {
         viewPagerAdapter = ViewPagerAdapter(
             childFragmentManager, lifecycle, mutableListOf(
-                HabitsListFragment.newInstance(HabitType.GOOD),
-                HabitsListFragment.newInstance(HabitType.BAD)
+                HabitsListFragment.newInstance(com.ivan.domain.model.HabitType.GOOD),
+                HabitsListFragment.newInstance(com.ivan.domain.model.HabitType.BAD)
             )
         )
 

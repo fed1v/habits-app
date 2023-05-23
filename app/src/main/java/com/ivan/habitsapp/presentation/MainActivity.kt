@@ -1,6 +1,7 @@
 package com.ivan.habitsapp.presentation
 
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -18,14 +19,23 @@ class MainActivity : AppCompatActivity() {
     lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("DEBUGGG", "OnCreate!!!1!")
         super.onCreate(savedInstanceState)
+        Log.d("DEBUGGG", "OnCreate!!!..................!2")
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        Log.d("DEBUGGG", "OnCreate!!!..................!3")
+
 
         navController = Navigation.findNavController(this, R.id.mainActivityNavHost)
 
         initDrawerLayoutNavigation()
         openHabitsViewPagerFragment()
+
+        Log.d("DEBUGGG", "OnCreate!!!..................!4")
+
     }
 
     private fun initDrawerLayoutNavigation() {

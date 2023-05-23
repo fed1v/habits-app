@@ -1,6 +1,7 @@
 package com.ivan.habitsapp.presentation
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,21 +10,15 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.ivan.data.repository.HabitsRepositoryImpl
+import com.ivan.domain.repository.HabitsRepository
 import com.ivan.habitsapp.R
 import com.ivan.habitsapp.databinding.FragmentHabitsListBinding
-import com.ivan.habitsapp.model.HabitOrder
-import com.ivan.habitsapp.model.HabitType
-import com.ivan.habitsapp.model.database.Habit
-import com.ivan.habitsapp.model.database.HabitsDao
-import com.ivan.habitsapp.model.database.HabitsDatabase
-import com.ivan.habitsapp.model.remote.AuthInterceptor
-import com.ivan.habitsapp.model.remote.HabitsService
-import com.ivan.habitsapp.model.remote.baseUrl
-import com.ivan.habitsapp.model.repository.HabitsRepository
 import com.ivan.habitsapp.presentation.adapter.HabitAdapter
 import com.ivan.habitsapp.presentation.viewmodel.HabitsListViewModel
 import com.ivan.habitsapp.presentation.viewmodel.viewmodel_factory.HabitsListViewModelFactory
 import com.ivan.habitsapp.util.OnItemClickListener
+import com.ivan.presentation.model.HabitPresentation
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -36,7 +31,7 @@ class HabitsListFragment : Fragment() {
         private const val TYPE_ARG_PARAM = "TYPE_PARAM"
         private const val HABIT_ARG_PARAM = "HABIT_PARAM"
 
-        fun newInstance(type: HabitType?): HabitsListFragment {
+        fun newInstance(type: com.ivan.domain.model.HabitType?): HabitsListFragment {
             return HabitsListFragment().apply {
                 arguments = Bundle().apply {
                     putString(TYPE_ARG_PARAM, type?.name)
@@ -45,29 +40,29 @@ class HabitsListFragment : Fragment() {
         }
     }
 
-    private lateinit var habitsDatabase: HabitsDatabase
-    private lateinit var habitsDao: HabitsDao
+    private lateinit var habitsDatabase: com.ivan.data.database.HabitsDatabase
+    private lateinit var habitsDao: com.ivan.data.database.HabitsDao
 
     private lateinit var habitsRepository: HabitsRepository
 
-    private lateinit var authInterceptor: AuthInterceptor
-    private lateinit var habitsService: HabitsService
+    private lateinit var authInterceptor: com.ivan.data.remote.AuthInterceptor
+    private lateinit var habitsService: com.ivan.data.remote.HabitsService
 
     private lateinit var viewModel: HabitsListViewModel
 
     private lateinit var binding: FragmentHabitsListBinding
     private lateinit var habitAdapter: HabitAdapter
 
-    private lateinit var habits: MutableList<Habit>
-    private var type: HabitType? = null
+    private lateinit var habits: MutableList<HabitPresentation>
+    private var type: com.ivan.domain.model.HabitType? = null
 
-    private var filters: ((Habit) -> Boolean)? = null
-    private var priorityOrder: HabitOrder? = null
+    private var filters: ((HabitPresentation) -> Boolean)? = null
+    private var priorityOrder: com.ivan.domain.model.HabitOrder? = null
 
     private val token = "64f15871-0c48-4db0-9c3f-690ba8d8b6a7"
 
-    private val habitItemClickListener = object : OnItemClickListener<Habit> {
-        override fun onItemClicked(item: Habit) {
+    private val habitItemClickListener = object : OnItemClickListener<HabitPresentation> {
+        override fun onItemClicked(item: HabitPresentation) {
             openAddEditHabitFragment(item)
         }
     }
@@ -77,7 +72,7 @@ class HabitsListFragment : Fragment() {
 
         arguments?.let {
             type = it.getString((TYPE_ARG_PARAM))?.let { typeString ->
-                HabitType.valueOf(typeString)
+                com.ivan.domain.model.HabitType.valueOf(typeString)
             }
         }
     }
@@ -111,10 +106,12 @@ class HabitsListFragment : Fragment() {
         binding.buttonAdd.setOnClickListener {
             openAddEditHabitFragment(null)
         }
+
+        Log.d("DEBUGGG", "HabitsListFragment end of onViewCreated")
     }
 
     private fun initRepository() {
-        habitsRepository = HabitsRepository(habitsService, habitsDao, token)
+        habitsRepository = HabitsRepositoryImpl(habitsService, habitsDao, token)
     }
 
     private fun updateDataOnServer() {
@@ -131,17 +128,17 @@ class HabitsListFragment : Fragment() {
             .build()
 
         habitsService = Retrofit.Builder()
-            .baseUrl(baseUrl)
+            .baseUrl(com.ivan.data.remote.baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()
-            .create(HabitsService::class.java)
+            .create(com.ivan.data.remote.HabitsService::class.java)
     }
 
     private fun initDatabase() {
         habitsDatabase = Room.databaseBuilder(
             requireContext().applicationContext,
-            HabitsDatabase::class.java,
+            com.ivan.data.database.HabitsDatabase::class.java,
             "habits_database"
         )
             .allowMainThreadQueries()
@@ -158,18 +155,18 @@ class HabitsListFragment : Fragment() {
 
     private fun initRadioGroup() {
         binding.fragmentHabitsListOrderByPriorityAscending.setOnClickListener {
-            priorityOrder = HabitOrder.ASCENDING
-            viewModel.showHabitsWithFilters({ it.type == type }, priorityOrder ?: HabitOrder.NONE)
+            priorityOrder = com.ivan.domain.model.HabitOrder.ASCENDING
+            viewModel.showHabitsWithFilters({ it.type == type }, priorityOrder ?: com.ivan.domain.model.HabitOrder.NONE)
         }
 
         binding.fragmentHabitsListOrderByPriorityDescending.setOnClickListener {
-            priorityOrder = HabitOrder.DESCENDING
-            viewModel.showHabitsWithFilters({ it.type == type }, priorityOrder ?: HabitOrder.NONE)
+            priorityOrder = com.ivan.domain.model.HabitOrder.DESCENDING
+            viewModel.showHabitsWithFilters({ it.type == type }, priorityOrder ?: com.ivan.domain.model.HabitOrder.NONE)
         }
     }
 
     private fun resetFilters() {
-        viewModel.showHabitsWithFilters({ it.type == type }, HabitOrder.NONE)
+        viewModel.showHabitsWithFilters({ it.type == type }, com.ivan.domain.model.HabitOrder.NONE)
         binding.fragmentHabitsListOrderByPriorityRadioGroup.clearCheck()
     }
 
@@ -212,7 +209,7 @@ class HabitsListFragment : Fragment() {
         }
     }
 
-    private fun openAddEditHabitFragment(habit: Habit?) {
+    private fun openAddEditHabitFragment(habit: HabitPresentation?) {
         val bundle = Bundle().apply {
             putParcelable(HABIT_ARG_PARAM, habit)
         }
@@ -227,7 +224,7 @@ class HabitsListFragment : Fragment() {
             titleFilter = {
                 it.title.contains(textQuery) && it.type == type
             },
-            priorityOrder = priorityOrder ?: HabitOrder.NONE
+            priorityOrder = priorityOrder ?: com.ivan.domain.model.HabitOrder.NONE
         )
     }
 
