@@ -24,8 +24,7 @@ data class HabitEntity(
     val date: Int,
     val periodicity: HabitPeriodicity,
     val color: Int = Color.parseColor("#66BB6A"),
-    val isSynced: Boolean = false,
-
+    val isSynced: Boolean,
     val doneDates: DoneDates,
     val frequency: Int,
     val count: Int

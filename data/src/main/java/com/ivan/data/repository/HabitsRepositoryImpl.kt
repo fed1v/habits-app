@@ -19,20 +19,12 @@ class HabitsRepositoryImpl(
     private val TAG = "OkHttp"
 
     private val habitToHabitEntityMapper = HabitToHabitEntityMapper()
-    private val habitToHabitRemoteMapper = HabitToHabitRemoteMapper()
     private val habitEntityToHabitMapper = HabitEntityToHabitMapper()
 
     override suspend fun saveHabit(habit: Habit) {
-        Log.d(TAG, "saveHabit: $habit")
-        val habitRemote = HabitToHabitRemoteMapper().map(habit)
+        Log.d(TAG, "        saveHabit: $habit")
         try {
-            val response = habitsService.putHabit(token, habitRemote)
-            val uid = response.uid // добавить получение списка
-            //
-            val newHabit = habit.copy(id = habit.id, uid = uid, isSynced = true)
-            val habitEntity = habitToHabitEntityMapper.map(newHabit)
-            habitsDao.insertHabit(habitEntity)
-            Log.d(TAG, "Successfully saved: ${habitEntity}")
+            putToServer(habit)
         } catch (e: Exception) {
             val habitEntity = habitToHabitEntityMapper.map(habit.copy(isSynced = false))
             habitsDao.insertHabit(habitEntity)
@@ -53,5 +45,18 @@ class HabitsRepositoryImpl(
                 saveHabit(habit)
             }
         }
+    }
+
+    private suspend fun putToServer(habit: Habit) {
+        val habitRemote = HabitToHabitRemoteMapper().map(habit)
+        val response = habitsService.putHabit(token, habitRemote)
+
+        val uid = response.uid // добавить получение списка
+
+        val newHabit = habit.copy(id = habit.id, uid = uid, isSynced = true)
+        val habitEntity = habitToHabitEntityMapper.map(newHabit)
+
+        habitsDao.insertHabit(habitEntity)
+        Log.d(TAG, "Successfully saved: ${habitEntity}")
     }
 }

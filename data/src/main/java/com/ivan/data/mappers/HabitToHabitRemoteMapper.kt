@@ -14,6 +14,6 @@ class HabitToHabitRemoteMapper {
         priority = habit.priority.ordinal,
         title = habit.title,
         type = habit.type.ordinal,
-        uid = if (habit.uid.isBlank()) null else habit.uid
+        uid = habit.uid.ifBlank { null },
     )
 }

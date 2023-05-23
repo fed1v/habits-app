@@ -7,6 +7,7 @@ import com.ivan.domain.model.Habit
 class HabitToHabitEntityMapper {
 
     fun map(habit: Habit) = HabitEntity(
+        id = habit.id,
         color = habit.color,
         count = -1,
         date = habit.date,
@@ -17,6 +18,7 @@ class HabitToHabitEntityMapper {
         title = habit.title,
         type = habit.type,
         uid = habit.uid.ifBlank { "" },
-        periodicity = habit.periodicity
+        periodicity = habit.periodicity,
+        isSynced = habit.isSynced
     )
 }

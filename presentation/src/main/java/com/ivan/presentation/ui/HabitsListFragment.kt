@@ -1,7 +1,6 @@
 package com.ivan.presentation.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,7 +44,6 @@ class HabitsListFragment : Fragment() {
 
     private lateinit var habitsRepository: HabitsRepository
 
-    private lateinit var authInterceptor: com.ivan.data.remote.AuthInterceptor
     private lateinit var habitsService: com.ivan.data.remote.HabitsService
 
     private lateinit var viewModel: HabitsListViewModel
@@ -106,8 +104,6 @@ class HabitsListFragment : Fragment() {
         binding.buttonAdd.setOnClickListener {
             openAddEditHabitFragment(null)
         }
-
-        Log.d("DEBUGGG", "HabitsListFragment end of onViewCreated")
     }
 
     private fun initRepository() {

@@ -1,7 +1,6 @@
 package com.ivan.presentation.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,13 +22,11 @@ class HabitsViewPagerFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.d("DEBUGGG", "HabitsViewPagerFragment onCreateView")
         binding = FragmentHabitsViewPagerBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.d("DEBUGGG", "HabitsViewPagerFragment onViewCreated")
         super.onViewCreated(view, savedInstanceState)
         initViewPager()
     }

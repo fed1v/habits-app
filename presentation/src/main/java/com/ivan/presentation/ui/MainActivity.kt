@@ -1,7 +1,6 @@
 package com.ivan.presentation.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
