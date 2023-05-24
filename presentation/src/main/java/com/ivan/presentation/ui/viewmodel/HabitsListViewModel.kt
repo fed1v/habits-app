@@ -1,8 +1,11 @@
 package com.ivan.presentation.ui.viewmodel
 
 import androidx.lifecycle.*
+import com.ivan.data.database.HabitsDao
 import com.ivan.data.mappers.HabitEntityToHabitMapper
+import com.ivan.domain.model.HabitOrder
 import com.ivan.domain.repository.HabitsRepository
+import com.ivan.domain.usecase.GetHabitsUseCase
 import com.ivan.presentation.mappers.HabitPresentationToHabitMapper
 import com.ivan.presentation.mappers.HabitToHabitPresentationMapper
 import com.ivan.presentation.model.HabitPresentation
@@ -11,8 +14,9 @@ import kotlinx.coroutines.launch
 
 class HabitsListViewModel(
     private val filters: ((HabitPresentation) -> Boolean)?,
-    private val habitsDao: com.ivan.data.database.HabitsDao,
-    private val habitsRepository: HabitsRepository
+    private val habitsDao: HabitsDao,
+    private val habitsRepository: HabitsRepository,
+    private val getHabitsUseCase: GetHabitsUseCase
 ) : ViewModel() {
 
     private var habitsObserver = Observer<List<HabitPresentation>> {
@@ -20,9 +24,13 @@ class HabitsListViewModel(
             _habitsListLiveData.postValue(
                 filterHabits(
                     filters,
-                    com.ivan.domain.model.HabitOrder.NONE
+                    HabitOrder.NONE
                 )
             )
+            //  _habitsListLiveData.value = filterHabits(
+            //      filters,
+            //      HabitOrder.NONE
+            //  )
         }
     }
 
@@ -37,17 +45,28 @@ class HabitsListViewModel(
     private val habitEntityToHabitMapper = HabitEntityToHabitMapper()
 
     init {
+        println("init")
+
         viewModelScope.launch(Dispatchers.IO) {
-            _habitsFromDatabaseLivedata = habitsDao.getAllHabits()
-                .map { list ->
-                    list.map {
-                        habitToHabitPresentationMapper.map(
-                            habitEntityToHabitMapper.map(it)
-                        )
-                    }
-                }
+            //    _habitsFromDatabaseLivedata = habitsDao.getAllHabits()
+            //        .map { list ->
+            //            list.map {
+            //                habitToHabitPresentationMapper.map(
+            //                    habitEntityToHabitMapper.map(it)
+            //                )
+            //            }
+            //        }
+
 
             launch(Dispatchers.Main) {
+                _habitsFromDatabaseLivedata =
+                    getHabitsUseCase.invoke()
+                        .asLiveData(Dispatchers.IO)
+                        .map { list ->
+                            println("list in viewModel = $list")
+                            list.map { it -> habitToHabitPresentationMapper.map(it) }
+                        }
+
                 _habitsFromDatabaseLivedata?.observeForever(habitsObserver)
             }
         }
@@ -55,7 +74,7 @@ class HabitsListViewModel(
 
     fun showHabitsWithFilters(
         titleFilter: ((HabitPresentation) -> Boolean)?,
-        priorityOrder: com.ivan.domain.model.HabitOrder
+        priorityOrder: HabitOrder
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             _habitsListLiveData.postValue(filterHabits(titleFilter, priorityOrder))
@@ -70,7 +89,7 @@ class HabitsListViewModel(
 
     private fun filterHabits(
         titleFilter: ((HabitPresentation) -> Boolean)?,
-        priorityOrder: com.ivan.domain.model.HabitOrder
+        priorityOrder: HabitOrder
     ): List<HabitPresentation> {
         var filteredHabits = _habitsFromDatabaseLivedata?.value
             ?.filter { habit ->
@@ -79,17 +98,17 @@ class HabitsListViewModel(
             ?.toMutableList() ?: listOf()
 
         filteredHabits = when (priorityOrder) {
-            com.ivan.domain.model.HabitOrder.ASCENDING -> {
+            HabitOrder.ASCENDING -> {
                 filteredHabits
                     .sortedBy { it.priority }
                     .toMutableList()
             }
-            com.ivan.domain.model.HabitOrder.DESCENDING -> {
+            HabitOrder.DESCENDING -> {
                 filteredHabits
                     .sortedByDescending { it.priority }
                     .toMutableList()
             }
-            com.ivan.domain.model.HabitOrder.NONE -> filteredHabits
+            HabitOrder.NONE -> filteredHabits
         }
 
         return filteredHabits
