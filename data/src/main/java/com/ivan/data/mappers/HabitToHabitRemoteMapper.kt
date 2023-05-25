@@ -6,11 +6,11 @@ import com.ivan.domain.model.Habit
 class HabitToHabitRemoteMapper {
     fun map(habit: Habit) = HabitRemote(
         color = habit.color,
-        count = -1,
+        count = habit.count,
         date = habit.date,
         description = habit.description,
-        done_dates = listOf(0),
-        frequency = habit.periodicity.timesAmount,
+        done_dates = habit.doneDates,
+        frequency = habit.frequency,
         priority = habit.priority.ordinal,
         title = habit.title,
         type = habit.type.ordinal,

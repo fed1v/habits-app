@@ -10,4 +10,6 @@ interface HabitsRepository {
     suspend fun saveHabit(habit: Habit)
 
     suspend fun updateDataOnServer()
+
+    suspend fun completeHabit(habit: Habit)
 }

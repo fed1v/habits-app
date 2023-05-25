@@ -136,7 +136,9 @@ class AddEditHabitFragment : Fragment() {
                 ),
                 color = chosenColor ?: habit!!.color,
                 date = date,
-                doneDates = habit?.doneDates ?: listOf()
+                doneDates = habit?.doneDates ?: listOf(),
+                count = /*habit?.count ?:*/ periodicityTimes,
+                frequency = /*habit?.frequency ?:*/ periodsAmount
             )
 
             viewModel.saveHabit(habit, newHabit)

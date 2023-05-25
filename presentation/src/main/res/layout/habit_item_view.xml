@@ -23,9 +23,11 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:padding="10dp">
+            android:padding="10dp"
+            app:layout_constraintEnd_toStartOf="@id/fab_complete_task"
+            app:layout_constraintStart_toStartOf="parent">
 
 
             <TextView
@@ -67,14 +69,22 @@
                 android:id="@+id/textview_habit_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textStyle="italic"
                 app:layout_constraintBottom_toTopOf="@id/textview_habit_priority"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:textStyle="italic"
                 tools:text="Type" />
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_complete_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:src="@drawable/icon_check_mark"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -5,6 +5,7 @@ import com.ivan.data.database.HabitsDao
 import com.ivan.data.mappers.HabitEntityToHabitMapper
 import com.ivan.domain.model.HabitOrder
 import com.ivan.domain.repository.HabitsRepository
+import com.ivan.domain.usecase.CompleteHabitUseCase
 import com.ivan.domain.usecase.GetHabitsUseCase
 import com.ivan.presentation.mappers.HabitPresentationToHabitMapper
 import com.ivan.presentation.mappers.HabitToHabitPresentationMapper
@@ -16,7 +17,8 @@ class HabitsListViewModel(
     private val filters: ((HabitPresentation) -> Boolean)?,
     private val habitsDao: HabitsDao,
     private val habitsRepository: HabitsRepository,
-    private val getHabitsUseCase: GetHabitsUseCase
+    private val getHabitsUseCase: GetHabitsUseCase,
+    private val completeHabitUseCase: CompleteHabitUseCase
 ) : ViewModel() {
 
     private var habitsObserver = Observer<List<HabitPresentation>> {
@@ -27,10 +29,6 @@ class HabitsListViewModel(
                     HabitOrder.NONE
                 )
             )
-            //  _habitsListLiveData.value = filterHabits(
-            //      filters,
-            //      HabitOrder.NONE
-            //  )
         }
     }
 
@@ -76,14 +74,21 @@ class HabitsListViewModel(
         titleFilter: ((HabitPresentation) -> Boolean)?,
         priorityOrder: HabitOrder
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _habitsListLiveData.postValue(filterHabits(titleFilter, priorityOrder))
+        viewModelScope.launch(Dispatchers.Main) {
+            _habitsListLiveData.setValue(filterHabits(titleFilter, priorityOrder))
         }
     }
 
     fun updateDataOnServer() {
         viewModelScope.launch(Dispatchers.IO) {
             habitsRepository.updateDataOnServer()
+        }
+    }
+
+    fun completeHabit(habitPresentation: HabitPresentation) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val habit = habitPresentationToHabitMapper.map(habitPresentation)
+            completeHabitUseCase.invoke(habit)
         }
     }
 

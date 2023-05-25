@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -17,6 +18,7 @@ import com.ivan.presentation.model.HabitPresentation
 import com.ivan.presentation.ui.adapter.HabitAdapter
 import com.ivan.presentation.ui.viewmodel.HabitsListViewModel
 import com.ivan.presentation.ui.viewmodel.viewmodel_factory.HabitsListViewModelFactory
+import com.ivan.presentation.util.OnCompleteClickListener
 import com.ivan.presentation.util.OnItemClickListener
 import javax.inject.Inject
 
@@ -51,6 +53,32 @@ class HabitsListFragment : Fragment() {
     private val habitItemClickListener = object : OnItemClickListener<HabitPresentation> {
         override fun onItemClicked(item: HabitPresentation) {
             openAddEditHabitFragment(item)
+        }
+    }
+
+    private val onCompleteClickListener = object : OnCompleteClickListener<HabitPresentation> {
+        override fun onCompleteClicked(item: HabitPresentation) {
+            viewModel.completeHabit(item)
+            viewModel.showHabitsWithFilters(filters, HabitOrder.NONE)
+            checkIfMaxAmountExceeded(item)
+        }
+    }
+
+    private fun checkIfMaxAmountExceeded(item: HabitPresentation) {
+        if (item.count >= item.frequency) {
+            val message =
+                if (item.type == HabitType.GOOD) "You are breathtaking!"
+                else "Stop doing it"
+
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        } else {
+            val timesLeft = item.frequency - item.count
+
+            val message =
+                if (item.type == HabitType.GOOD) "You should do it $timesLeft times"
+                else "$timesLeft times left"
+
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -191,7 +219,7 @@ class HabitsListFragment : Fragment() {
     }
 
     private fun initRecyclerView() {
-        habitAdapter = HabitAdapter(habitItemClickListener)
+        habitAdapter = HabitAdapter(habitItemClickListener, onCompleteClickListener)
         binding.recyclerviewHabitsList.adapter = habitAdapter
     }
 }

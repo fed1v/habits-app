@@ -2,6 +2,7 @@ package com.ivan.presentation.di
 
 import com.ivan.data.database.HabitsDao
 import com.ivan.domain.repository.HabitsRepository
+import com.ivan.domain.usecase.CompleteHabitUseCase
 import com.ivan.domain.usecase.GetHabitsUseCase
 import com.ivan.presentation.ui.viewmodel.viewmodel_factory.AddEditHabitViewModelFactory
 import com.ivan.presentation.ui.viewmodel.viewmodel_factory.HabitsListViewModelFactory
@@ -22,13 +23,13 @@ class PresentationModule {
     fun provideHabitsListViewModelFactory(
         dao: HabitsDao,
         repository: HabitsRepository,
-        //  getHabitsUseCase: GetHabitsUseCase
     ): HabitsListViewModelFactory {
         return HabitsListViewModelFactory(
             filters = { true },
             habitsDao = dao,
             habitsRepository = repository,
-            getHabitsUseCase = GetHabitsUseCase(repository)
+            getHabitsUseCase = GetHabitsUseCase(repository),
+            completeHabitUseCase = CompleteHabitUseCase(repository)
         )
     }
 }

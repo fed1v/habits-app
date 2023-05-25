@@ -19,5 +19,7 @@ data class HabitPresentation(
     val periodicity: HabitPeriodicity,
     val color: Int = Color.parseColor("#66BB6A"),
     val isSynced: Boolean = false,
-    val doneDates: List<Int>
+    val doneDates: List<Int>,
+    val count: Int,
+    val frequency: Int
 ) : Parcelable

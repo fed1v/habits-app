@@ -16,6 +16,8 @@ class HabitEntityToHabitMapper {
         type = habit.type,
         uid = habit.uid.ifBlank { "" },
         periodicity = habit.periodicity,
-        isSynced = habit.isSynced
+        isSynced = habit.isSynced,
+        count = habit.count,
+        frequency = habit.frequency
     )
 }

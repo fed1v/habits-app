@@ -9,11 +9,11 @@ class HabitToHabitEntityMapper {
     fun map(habit: Habit) = HabitEntity(
         id = habit.id,
         color = habit.color,
-        count = -1,
+        count = habit.count,
         date = habit.date,
         description = habit.description,
         doneDates = DoneDates(habit.doneDates),
-        frequency = habit.periodicity.timesAmount,
+        frequency = habit.frequency,
         priority = habit.priority,
         title = habit.title,
         type = habit.type,

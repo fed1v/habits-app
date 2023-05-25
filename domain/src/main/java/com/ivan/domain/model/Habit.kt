@@ -14,4 +14,6 @@ data class Habit(
     val color: Int = Color.parseColor("#66BB6A"),
     val isSynced: Boolean,
     val doneDates: List<Int>,
+    val count: Int,
+    val frequency: Int
 )

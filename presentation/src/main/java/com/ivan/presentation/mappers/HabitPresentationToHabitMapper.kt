@@ -23,6 +23,8 @@ class HabitPresentationToHabitMapper {
         ),
         color = habit.color,
         isSynced = habit.isSynced,
-        doneDates = habit.doneDates
+        doneDates = habit.doneDates,
+        count = habit.count,
+        frequency = habit.frequency
     )
 }

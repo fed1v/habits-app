@@ -20,8 +20,6 @@ class DataModule(
     private val token: String
 ) {
 
-
-    // Singleton ? TODO
     @Provides
     fun provideHabitsService(): HabitsService {
         val loggingInterceptor = HttpLoggingInterceptor().apply {

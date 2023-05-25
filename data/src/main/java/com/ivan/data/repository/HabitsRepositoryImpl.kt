@@ -10,7 +10,7 @@ import com.ivan.data.remote.HabitsService
 import com.ivan.domain.model.*
 import com.ivan.domain.repository.HabitsRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 
 class HabitsRepositoryImpl(
@@ -27,51 +27,55 @@ class HabitsRepositoryImpl(
     override suspend fun getHabits(): Flow<List<Habit>> {
         val habitsLocal = habitsDao.getHabitsList()
 
-        try {
-            val habitsRemote = habitsService.getHabits(token).map { habitRemote ->
-                val habitLocal = habitsLocal.find { it.uid == habitRemote.uid }
-
-                println("Search uid ${habitRemote.uid}")
-
-                val habitEntity = HabitEntity(
-                    id = habitLocal?.id,
-                    uid = habitRemote.uid ?: "",
-                    title = habitRemote.title,
-                    description = habitRemote.description,
-                    priority = HabitPriority.values()[habitRemote.priority],
-                    type = HabitType.values()[habitRemote.type],
-                    date = habitRemote.date,
-                    periodicity = HabitPeriodicity(
-                        timesAmount = -10,
-                        period = Periods.DAY,
-                        periodsAmount = -1
-                    ),
-                    color = habitRemote.color,
-                    isSynced = true,
-                    doneDates = DoneDates(habitRemote.done_dates),
-                    frequency = habitRemote.frequency,
-                    count = habitRemote.count
-                )
-                if (habitLocal == null) {
-                    println("Local not found, insert: $habitEntity")
-                    habitsDao.insertHabit(habitEntity)
-                    return@map habitEntityToHabitMapper.map(habitEntity)
+        return habitsDao.getAllHabits().map {
+            try {
+                return@map mapRemoteToLocal(it)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                if (e is HttpException) {
+                    Log.d(TAG, e.message())
+                    Log.d(TAG, e.response().toString())
                 }
 
+                return@map habitsLocal.map { habitEntity ->
+                    habitEntityToHabitMapper.map(habitEntity)
+                }
+            }
+        }
+    }
+
+    private suspend fun mapRemoteToLocal(localHabits: List<HabitEntity>): List<Habit> {
+        val habitsRemote = habitsService.getHabits(token).map { habitRemote ->
+            val habitLocal = localHabits.find { it.uid == habitRemote.uid }
+
+            val habitEntity = HabitEntity(
+                id = habitLocal?.id,
+                uid = habitRemote.uid ?: "",
+                title = habitRemote.title,
+                description = habitRemote.description,
+                priority = HabitPriority.values()[habitRemote.priority],
+                type = HabitType.values()[habitRemote.type],
+                date = habitRemote.date,
+                periodicity = habitLocal?.periodicity ?: HabitPeriodicity(
+                    period = Periods.DAY,
+                    periodsAmount = 1,
+                    timesAmount = 1
+                ),
+                color = habitRemote.color,
+                isSynced = true,
+                doneDates = DoneDates(habitRemote.done_dates),
+                frequency = habitRemote.frequency,
+                count = habitRemote.count
+            )
+            if (habitLocal == null) {
+                habitsDao.insertHabit(habitEntity)
                 return@map habitEntityToHabitMapper.map(habitEntity)
             }
 
-            return flow { emit(habitsRemote) }
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            if (e is HttpException) {
-                Log.d(TAG, e.message())
-                Log.d(TAG, e.response().toString())
-            }
+            return@map habitEntityToHabitMapper.map(habitEntity)
         }
 
-        return flow { emit(habitsLocal.map { habitEntityToHabitMapper.map(it) }) }
+        return habitsRemote
     }
 
     override suspend fun saveHabit(habit: Habit) {
@@ -103,7 +107,17 @@ class HabitsRepositoryImpl(
         }
     }
 
-    private suspend fun putToServer(habit: Habit) { // TODO edit
+    override suspend fun completeHabit(habit: Habit) {
+        saveHabit(
+            habit.copy(
+                count = habit.count + 1,
+                date = (System.currentTimeMillis() / 1000).toInt(),
+                periodicity = habit.periodicity.copy(timesAmount = habit.periodicity.timesAmount + 1)
+            )
+        )
+    }
+
+    private suspend fun putToServer(habit: Habit) {
         val habitRemote = HabitToHabitRemoteMapper().map(habit)
         val response = habitsService.putHabit(token, habitRemote)
 
@@ -111,11 +125,9 @@ class HabitsRepositoryImpl(
 
         val newHabit = habit.copy(id = habit.id, uid = uid, isSynced = true)
 
-        Log.d(TAG, "Insert to database... $newHabit")
         val habitEntity = habitToHabitEntityMapper.map(newHabit)
 
         habitsDao.insertHabit(habitEntity)
-        Log.d(TAG, "Inserted")
         Log.d(TAG, "Successfully saved: ${habitEntity}")
     }
 }
